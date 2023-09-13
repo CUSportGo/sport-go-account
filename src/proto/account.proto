@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package account;
+
+service AccountService {
+  rpc Login(LoginRequest) returns (LoginResponse) {}
+  rpc RefreshToken(RefreshTokenRequest) returns (RefreshTokenResponse) {}
+}
+
+message Credential {
+  string access_token = 1;
+  string refresh_token = 2;
+  int32 access_token_expires_in = 3;
+  int32 refresh_token_expires_in = 4;
+}
+
+message LoginRequest {
+  string email = 1;
+  string password = 2;
+}
+
+message LoginResponse {
+  Credential credential = 1;
+}
+
+message RefreshTokenRequest {
+  string refresh_token = 1;
+}
+
+message RefreshTokenResponse {
+  Credential credential = 1;
+}

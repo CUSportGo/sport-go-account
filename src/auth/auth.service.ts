@@ -1,6 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { GrpcUnauthenticatedException } from 'nestjs-grpc-exceptions';
+import {
+  GrpcInternalException,
+  GrpcUnauthenticatedException,
+} from 'nestjs-grpc-exceptions';
 import {
   AuthService as AuthGRPCService,
   Credential,
@@ -23,7 +26,7 @@ export class AuthService implements AuthGRPCService {
 
   async Login(request: LoginRequest): Promise<LoginResponse> {
     try {
-      const user = await this.userRepo.getUserByEmail(request.email);
+      let user = await this.userRepo.getUserByEmail(request.email);
       const isPasswordMatch = await bcrypt.compare(
         request.password,
         user.password,
@@ -36,6 +39,14 @@ export class AuthService implements AuthGRPCService {
       }
 
       const { accessToken, refreshToken } = await this.getTokens(user.id);
+      user = await this.userRepo.updateRefreshToken(user.id, refreshToken);
+      if (!user) {
+        throw new GrpcInternalException({
+          statusCode: 500,
+          message: 'internal error',
+        });
+      }
+
       const credential = Credential.create({
         accessToken: accessToken,
         refreshToken: refreshToken,

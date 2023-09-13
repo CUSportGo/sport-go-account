@@ -9,7 +9,6 @@ export class AuthController {
 
   @GrpcMethod('AuthService', 'Login')
   login(request: LoginRequest): Promise<LoginResponse> {
-    console.log(request);
     return this.authService.Login(request);
   }
 }

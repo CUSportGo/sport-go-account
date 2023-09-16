@@ -9,4 +9,14 @@ export class UserRepository {
   async getUserByEmail(email: string): Promise<User> {
     return this.db.user.findUniqueOrThrow({ where: { email: email } });
   }
+
+  async updateRefreshToken(
+    userId: string,
+    refreshToken: string,
+  ): Promise<User> {
+    return this.db.user.update({
+      where: { id: userId },
+      data: { refreshToken: refreshToken },
+    });
+  }
 }

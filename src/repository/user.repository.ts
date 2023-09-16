@@ -7,14 +7,22 @@ export class UserRepository {
   constructor(private db: PrismaService) {}
 
   async getUserByEmail(email: string): Promise<User> {
-    return this.db.user.findUniqueOrThrow({ where: { email: email } });
+    return await this.db.user.findUniqueOrThrow({ where: { email: email } });
+  }
+
+  async findUnique(where, select?, include?): Promise<User> {
+    return await this.db.user.findUnique({ where: where });
+  }
+
+  async create(data): Promise<User> {
+    return await this.db.user.create({ data: data });
   }
 
   async updateRefreshToken(
     userId: string,
     refreshToken: string,
   ): Promise<User> {
-    return this.db.user.update({
+    return await this.db.user.update({
       where: { id: userId },
       data: { refreshToken: refreshToken },
     });

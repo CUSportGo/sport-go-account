@@ -11,6 +11,8 @@ import {
   LoginResponse,
   RefreshTokenRequest,
   RefreshTokenResponse,
+  RegisterRequest,
+  RegisterResponse,
 } from '../proto/auth';
 import { UserRepository } from '../repository/user.repository';
 import * as bcrypt from 'bcrypt';
@@ -96,5 +98,33 @@ export class AuthService implements AuthGRPCService {
     );
 
     return { accessToken, refreshToken };
+  }
+
+  async Register(request: RegisterRequest): Promise<RegisterResponse> {
+    try {
+      const existUser = this.userRepo.findUnique({
+        email: request.email,
+      });
+      if (existUser) {
+        throw new GrpcInternalException({
+          statusCode: 400,
+          message: 'Email Duplicate',
+        });
+      } else {
+        const hashedPassword = await bcrypt.hash(request.password, 12);
+        const newUser = {
+          firstName: request.firstName,
+          lastName: request.lastName,
+          email: request.email,
+          phoneNumber: request.phoneNumber,
+          role: request.role,
+          password: hashedPassword,
+        };
+        return await this.userRepo.create(newUser);
+      }
+    } catch (err) {
+      console.log(err);
+      throw err;
+    }
   }
 }

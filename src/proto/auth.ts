@@ -449,6 +449,7 @@ export const RefreshTokenResponse = {
 export interface AuthService {
   Login(request: LoginRequest): Promise<LoginResponse>;
   RefreshToken(request: RefreshTokenRequest): Promise<RefreshTokenResponse>;
+  Register(request: RegisterRequest): Promise<RegisterResponse>;
 }
 
 export const AuthServiceServiceName = 'auth.AuthService';
@@ -471,6 +472,14 @@ export class AuthServiceClientImpl implements AuthService {
 
   RefreshToken(request: RefreshTokenRequest): Promise<RefreshTokenResponse> {
     const data = RefreshTokenRequest.encode(request).finish();
+    const promise = this.rpc.request(this.service, 'RefreshToken', data);
+    return promise.then((data) =>
+      RefreshTokenResponse.decode(_m0.Reader.create(data)),
+    );
+  }
+
+  Register(request: RegisterRequest): Promise<RegisterResponse> {
+    const data = RegisterRequest.encode(request).finish();
     const promise = this.rpc.request(this.service, 'RefreshToken', data);
     return promise.then((data) =>
       RefreshTokenResponse.decode(_m0.Reader.create(data)),
@@ -514,4 +523,20 @@ export type Exact<P, I extends P> = P extends Builtin
 
 function isSet(value: any): boolean {
   return value !== null && value !== undefined;
+}
+
+export interface RegisterRequest {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phoneNumber: string;
+  password: string;
+  role: string;
+}
+
+export interface RegisterResponse {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phoneNumber: string;
 }

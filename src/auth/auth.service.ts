@@ -122,16 +122,16 @@ export class AuthService implements AuthServiceController {
     }
   }
 
-  async Logout(request: LogoutRequest): Promise<LogoutResponse> {
-    const emptyAccessToken = ''
-    const emptyCredential = Credential.create({
+  public async logout(request: LogoutRequest): Promise<LogoutResponse> {
+    const credential: Credential = {
       accessToken: '',
       refreshToken: '',
       accessTokenExpiresIn: 0,
       refreshTokenExpiresIn: 0,
-    });
+    };
 
-    return LogoutResponse.create();
+    return { credential };
+
   }
 
 }

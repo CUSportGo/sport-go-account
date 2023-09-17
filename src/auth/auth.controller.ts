@@ -14,6 +14,6 @@ export class AuthController {
 
   @GrpcMethod('AuthService', 'Logout')
   logout(request: LogoutRequest): Promise<LogoutResponse> {
-    return this.authService.Logout(request);
+    return this.authService.logout(request);
   }
 }

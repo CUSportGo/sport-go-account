@@ -122,6 +122,7 @@ export class AuthService implements AuthServiceController {
     }
   }
 
+<<<<<<< HEAD
   public async logout(request: LogoutRequest): Promise<LogoutResponse> {
     const credential: Credential = {
       accessToken: '',
@@ -131,6 +132,9 @@ export class AuthService implements AuthServiceController {
     };
 
     return { credential };
+=======
+  async Logout(request: LogoutRequest): Promise<LogoutResponse> {
+>>>>>>> e42a4cd (Remove some variable)
 
   }
 

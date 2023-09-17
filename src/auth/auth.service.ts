@@ -101,13 +101,6 @@ export class AuthService implements AuthGRPCService {
   }
 
   async Logout(request: LogoutRequest): Promise<LogoutResponse> {
-    const emptyAccessToken = ''
-    const emptyCredential = Credential.create({
-      accessToken: '',
-      refreshToken: '',
-      accessTokenExpiresIn: 0,
-      refreshTokenExpiresIn: 0,
-    });
 
     return LogoutResponse.create();
   }

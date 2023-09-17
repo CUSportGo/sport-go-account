@@ -16,4 +16,6 @@ export class AuthController {
   logout(request: LogoutRequest): Promise<LogoutResponse> {
     return this.authService.logout(request);
   }
+
+
 }

@@ -9,6 +9,8 @@ import {
   Credential,
   LoginRequest,
   LoginResponse,
+  LogoutRequest,
+  LogoutResponse,
   RefreshTokenRequest,
   RefreshTokenResponse,
 } from '../proto/auth';
@@ -22,7 +24,7 @@ export class AuthService implements AuthGRPCService {
     private userRepo: UserRepository,
     private jwtService: JwtService,
     private configService: ConfigService,
-  ) {}
+  ) { }
 
   async Login(request: LoginRequest): Promise<LoginResponse> {
     try {
@@ -97,4 +99,17 @@ export class AuthService implements AuthGRPCService {
 
     return { accessToken, refreshToken };
   }
+
+  async Logout(request: LogoutRequest): Promise<LogoutResponse> {
+    const emptyAccessToken = ''
+    const emptyCredential = Credential.create({
+      accessToken: '',
+      refreshToken: '',
+      accessTokenExpiresIn: 0,
+      refreshTokenExpiresIn: 0,
+    });
+
+    return LogoutResponse.create();
+  }
+
 }

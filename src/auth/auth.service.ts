@@ -88,7 +88,7 @@ export class AuthService implements AuthServiceController {
     request: ValidateGoogleRequest,
   ): Promise<ValidateGoogleResponse> {
     try {
-      let user = await this.userRepo.getUserByGoogleID(request.user.id);
+      let user = await this.userRepo.getUserByEmail(request.user.email);
       if (!user) {
         const userId = uuidv4();
         const createUser: Prisma.UserCreateInput = {

@@ -7,11 +7,7 @@ export class UserRepository {
   constructor(private db: PrismaService) {}
 
   async getUserByEmail(email: string): Promise<User> {
-    return this.db.user.findUnique({ where: { email: email, googleID: null } });
-  }
-
-  async getUserByGoogleID(googleID: string): Promise<User> {
-    return this.db.user.findUnique({ where: { googleID: googleID } });
+    return this.db.user.findUnique({ where: { email: email } });
   }
 
   async create(user: Prisma.UserCreateInput): Promise<User> {

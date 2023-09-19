@@ -10,10 +10,16 @@ import {
   LoginResponse,
   RefreshTokenRequest,
   RefreshTokenResponse,
+  RegisterRequest,
+  RegisterResponse,
+  ValidateGoogleRequest,
+  ValidateGoogleResponse,
 } from './auth.pb';
 import { RpcException } from '@nestjs/microservices';
 import { status } from '@grpc/grpc-js';
-import { GrpcPermissionDeniedException } from 'nestjs-grpc-exceptions';
+import { GrpcInternalException } from 'nestjs-grpc-exceptions';
+import { $Enums, Prisma } from '@prisma/client';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class AuthService implements AuthServiceController {
@@ -78,6 +84,60 @@ export class AuthService implements AuthServiceController {
     return null;
   }
 
+  public async validateGoogle(
+    request: ValidateGoogleRequest,
+  ): Promise<ValidateGoogleResponse> {
+    try {
+      let user = await this.userRepo.getUserByGoogleID(request.user.id);
+      if (!user) {
+        const userId = uuidv4();
+        const createUser: Prisma.UserCreateInput = {
+          id: userId,
+          firstName: request.user.firstName,
+          lastName: request.user.lastName,
+          email: request.user.email,
+          photoURL: request.user.photoURL,
+          role: $Enums.Role.USER,
+          googleID: request.user.id,
+        };
+        user = await this.userRepo.create(createUser);
+      } else {
+        if (!user.googleID) {
+          throw new RpcException({
+            code: status.PERMISSION_DENIED,
+            message: 'This email is already taken',
+          });
+        }
+      }
+
+      const { accessToken, refreshToken } = await this.getTokens(user.id);
+      user = await this.userRepo.updateRefreshToken(user.id, refreshToken);
+      if (!user) {
+        throw new RpcException({
+          code: status.INTERNAL,
+          message: 'internal server error',
+        });
+      }
+
+      const credential: Credential = {
+        accessToken: accessToken,
+        refreshToken: refreshToken,
+        accessTokenExpiresIn: 600,
+        refreshTokenExpiresIn: 604800,
+      };
+      return { credential };
+    } catch (err: any) {
+      console.log(err);
+      if (!(err instanceof RpcException)) {
+        throw new RpcException({
+          code: status.INTERNAL,
+          message: 'internal server error',
+        });
+      }
+      throw err;
+    }
+  }
+
   private async getTokens(userId: string) {
     try {
       const accessToken = await this.jwtService.signAsync(
@@ -120,11 +180,9 @@ export class AuthService implements AuthServiceController {
     }
   }
 
-  async Register(request: RegisterRequest): Promise<RegisterResponse> {
+  async register(request: RegisterRequest): Promise<RegisterResponse> {
     try {
-      const existUser = this.userRepo.findUnique({
-        email: request.email,
-      });
+      const existUser = this.userRepo.getUserByEmail(request.email);
       if (existUser) {
         throw new GrpcInternalException({
           statusCode: 400,
@@ -132,12 +190,14 @@ export class AuthService implements AuthServiceController {
         });
       } else {
         const hashedPassword = await bcrypt.hash(request.password, 12);
-        const newUser = {
+        const userId = uuidv4();
+        const newUser: Prisma.UserCreateInput = {
+          id: userId,
           firstName: request.firstName,
           lastName: request.lastName,
           email: request.email,
           phoneNumber: request.phoneNumber,
-          role: request.role,
+          role: request.role as $Enums.Role,
           password: hashedPassword,
         };
         return await this.userRepo.create(newUser);

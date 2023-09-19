@@ -5,7 +5,24 @@ package auth;
 service AuthService {
   rpc Login(LoginRequest) returns (LoginResponse) {}
   rpc RefreshToken(RefreshTokenRequest) returns (RefreshTokenResponse) {}
+  rpc Register(ReisterRequest) returns (RegisterResponse) {}
   rpc ValidateGoogle(ValidateGoogleRequest) returns (ValidateGoogleResponse) {}
+}
+
+message RegisterRequest {
+  string firstName =1;
+  string lastName =2;
+  string email =3;
+  string phoneNumber =4;
+  string password =5;
+  string role  =6 ;
+}
+
+message RegisterResponse {
+string firstName =1;
+  string lastName =2;
+  string email =3;
+  string phoneNumber =4;
 }
 
 message Credential {

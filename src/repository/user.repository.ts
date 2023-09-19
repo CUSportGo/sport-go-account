@@ -14,7 +14,7 @@ export class UserRepository {
     userId: string,
     refreshToken: string,
   ): Promise<User> {
-    return this.db.user.update({
+    return await this.db.user.update({
       where: { id: userId },
       data: { refreshToken: refreshToken },
     });

@@ -11,4 +11,8 @@ export class AuthController {
   login(request: LoginRequest): Promise<LoginResponse> {
     return this.authService.login(request);
   }
+  @GrpcMethod('AuthService', 'Register')
+  registerUser(request: RegisterRequest): Promise<RegisterResponse> {
+    return this.authService.Register(request);
+  }
 }

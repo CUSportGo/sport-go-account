@@ -17,10 +17,12 @@ model User {
   firstName    String
   lastName     String
   email        String   @unique
-  phoneNumber  String
-  password     String
+  phoneNumber  String?
+  password     String?
+  photoURL     String?
   role         Role     @default(USER)
   refreshToken String?
+  googleID     String?
 }
 
 enum Role {

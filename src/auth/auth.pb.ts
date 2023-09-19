@@ -4,6 +4,22 @@ import { Observable } from 'rxjs';
 
 export const protobufPackage = 'auth';
 
+export interface RegisterRequest {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phoneNumber: string;
+  password: string;
+  role: string;
+}
+
+export interface RegisterResponse {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phoneNumber: string;
+}
+
 export interface Credential {
   accessToken: string;
   refreshToken: string;
@@ -51,6 +67,8 @@ export interface AuthServiceClient {
 
   refreshToken(request: RefreshTokenRequest): Observable<RefreshTokenResponse>;
 
+  register(request: RegisterRequest): Observable<RegisterResponse>;
+
   validateGoogle(
     request: ValidateGoogleRequest,
   ): Observable<ValidateGoogleResponse>;
@@ -68,6 +86,13 @@ export interface AuthServiceController {
     | Observable<RefreshTokenResponse>
     | RefreshTokenResponse;
 
+  register(
+    request: RegisterRequest,
+  ):
+    | Promise<RegisterResponse>
+    | Observable<RegisterResponse>
+    | RegisterResponse;
+
   validateGoogle(
     request: ValidateGoogleRequest,
   ):
@@ -78,7 +103,12 @@ export interface AuthServiceController {
 
 export function AuthServiceControllerMethods() {
   return function (constructor: Function) {
-    const grpcMethods: string[] = ['login', 'refreshToken', 'validateGoogle'];
+    const grpcMethods: string[] = [
+      'login',
+      'refreshToken',
+      'register',
+      'validateGoogle',
+    ];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(
         constructor.prototype,

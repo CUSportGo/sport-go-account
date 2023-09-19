@@ -1,6 +1,11 @@
 import { Controller } from '@nestjs/common';
 import { GrpcMethod } from '@nestjs/microservices';
-import { LoginRequest, LoginResponse } from './auth.pb';
+import {
+  LoginRequest,
+  LoginResponse,
+  RegisterRequest,
+  RegisterResponse,
+} from './auth.pb';
 import { AuthService } from './auth.service';
 
 @Controller()

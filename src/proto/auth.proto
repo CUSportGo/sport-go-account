@@ -5,6 +5,7 @@ package auth;
 service AuthService {
   rpc Login(LoginRequest) returns (LoginResponse) {}
   rpc RefreshToken(RefreshTokenRequest) returns (RefreshTokenResponse) {}
+  rpc ValidateGoogle(ValidateGoogleRequest) returns (ValidateGoogleResponse) {}
 }
 
 message Credential {
@@ -12,6 +13,14 @@ message Credential {
   string refresh_token = 2;
   int32 access_token_expires_in = 3;
   int32 refresh_token_expires_in = 4;
+}
+
+message GoogleUser {
+  string id = 1;
+  string firstName = 2;
+  string lastName = 3;
+  string email = 4;
+  string photoURL = 5;
 }
 
 message LoginRequest {
@@ -28,5 +37,13 @@ message RefreshTokenRequest {
 }
 
 message RefreshTokenResponse {
+  Credential credential = 1;
+}
+
+message ValidateGoogleRequest {
+  GoogleUser user = 1;
+}
+
+message ValidateGoogleResponse {
   Credential credential = 1;
 }

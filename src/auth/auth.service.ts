@@ -21,7 +21,7 @@ export class AuthService implements AuthServiceController {
     private userRepo: UserRepository,
     private jwtService: JwtService,
     private configService: ConfigService,
-  ) {}
+  ) { }
 
   public async login(request: LoginRequest): Promise<LoginResponse> {
     try {
@@ -119,4 +119,5 @@ export class AuthService implements AuthServiceController {
       });
     }
   }
+
 }

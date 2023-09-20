@@ -20,23 +20,14 @@ export class UserRepository {
     });
   }
 
-  async create(
-    id: string,
-    firstName: string,
-    lastName: string,
-    email: string,
-    phoneNumber: string,
-    password: string,
-    role: string,
-  ): Promise<User> {
+  async create(createUser): Promise<User> {
     return await this.db.user.create({
       data: {
-        id: id,
-        firstName: firstName,
-        lastName: lastName,
-        email: email,
-        phoneNumber: phoneNumber,
-        password: password,
+        firstName: createUser.firstName,
+        lastName: createUser.lastName,
+        email: createUser.email,
+        phoneNumber: createUser.phoneNumber,
+        password: createUser.password,
         role: 'USER',
       },
     });

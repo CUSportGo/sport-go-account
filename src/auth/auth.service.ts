@@ -133,7 +133,6 @@ export class AuthService implements AuthServiceController {
       } else {
         const hashedPassword = await bcrypt.hash(request.password, 12);
         const newUser = {
-          id: 'a',
           firstName: request.firstName,
           lastName: request.lastName,
           email: request.email,

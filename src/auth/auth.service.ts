@@ -1,22 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-<<<<<<< HEAD
-=======
-import {
-  GrpcInternalException,
-  GrpcUnauthenticatedException,
-} from 'nestjs-grpc-exceptions';
-import {
-  AuthService as AuthGRPCService,
-  Credential,
-  LoginRequest,
-  LoginResponse,
-  LogoutRequest,
-  LogoutResponse,
-  RefreshTokenRequest,
-  RefreshTokenResponse,
-} from '../proto/auth';
->>>>>>> 9285fb7af8f0da5d50975fa38259494f79b5866a
 import { UserRepository } from '../repository/user.repository';
 import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
@@ -139,8 +122,6 @@ export class AuthService implements AuthServiceController {
     }
   }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
   public async logout(request: LogoutRequest): Promise<LogoutResponse> {
     const credential: Credential = {
       accessToken: '',
@@ -150,15 +131,7 @@ export class AuthService implements AuthServiceController {
     };
 
     return { credential };
-=======
-  async Logout(request: LogoutRequest): Promise<LogoutResponse> {
->>>>>>> e42a4cd (Remove some variable)
 
-=======
-  async Logout(request: LogoutRequest): Promise<LogoutResponse> {
-
-    return LogoutResponse.create();
->>>>>>> 9285fb7af8f0da5d50975fa38259494f79b5866a
   }
 
 }

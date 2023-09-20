@@ -10,10 +10,14 @@ import {
   LoginResponse,
   RefreshTokenRequest,
   RefreshTokenResponse,
+  RegisterRequest,
+  RegisterResponse,
 } from './auth.pb';
 import { RpcException } from '@nestjs/microservices';
 import { status } from '@grpc/grpc-js';
 import { GrpcPermissionDeniedException } from 'nestjs-grpc-exceptions';
+import { v4 as uuidv4 } from 'uuid';
+import { Role } from '@prisma/client';
 
 @Injectable()
 export class AuthService implements AuthServiceController {
@@ -117,6 +121,34 @@ export class AuthService implements AuthServiceController {
         code: status.INTERNAL,
         message: err.message,
       });
+    }
+  }
+
+
+  async register(request: RegisterRequest): Promise<RegisterResponse> {
+    try {
+      const existUser = await this.userRepo.getUserByEmail(request.email);
+      if (existUser) {
+        throw new RpcException({
+          code: status.ALREADY_EXISTS,
+          message: 'Duplicate Email',
+        });
+      } else {
+        const hashedPassword = await bcrypt.hash(request.password, 12);
+        const newUser = {
+          id: uuidv4(),
+          firstName: request.firstName,
+          lastName: request.lastName,
+          email: request.email,
+          phoneNumber: request.phoneNumber,
+          role: request.role == 'USER' ? Role.USER : Role.SPORTAREA,
+          password: hashedPassword,
+        };
+        return await this.userRepo.create(newUser);
+      }
+    } catch (err) {
+      console.log(err);
+      throw err;
     }
   }
 

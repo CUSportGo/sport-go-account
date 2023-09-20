@@ -33,7 +33,7 @@ export interface LogoutRequest {
 }
 
 export interface LogoutResponse {
-  credential: Credential | undefined;
+  isDone: boolean;
 }
 
 export const AUTH_PACKAGE_NAME = "auth";

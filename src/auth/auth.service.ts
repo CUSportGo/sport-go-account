@@ -123,14 +123,9 @@ export class AuthService implements AuthServiceController {
   }
 
   public async logout(request: LogoutRequest): Promise<LogoutResponse> {
-    const credential: Credential = {
-      accessToken: '',
-      refreshToken: '',
-      accessTokenExpiresIn: 0,
-      refreshTokenExpiresIn: 0,
-    };
 
-    return { credential };
+    const response: LogoutResponse = { isDone: true };
+    return response;
 
   }
 

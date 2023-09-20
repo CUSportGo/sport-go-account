@@ -37,5 +37,5 @@ message LogoutRequest {
 }
 
 message LogoutResponse {
-  Credential credential = 1;
+  bool is_done = 1;
 }

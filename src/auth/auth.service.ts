@@ -126,7 +126,7 @@ export class AuthService implements AuthServiceController {
 
   async register(request: RegisterRequest): Promise<RegisterResponse> {
     try {
-      const existUser = this.userRepo.getUserByEmail(request.email);
+      const existUser = await this.userRepo.getUserByEmail(request.email);
       if (existUser) {
         throw new RpcException({
           code: status.ALREADY_EXISTS,

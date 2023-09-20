@@ -4,6 +4,22 @@ import { Observable } from 'rxjs';
 
 export const protobufPackage = 'auth';
 
+export interface RegisterRequest {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phoneNumber: string;
+  password: string;
+  role: string;
+}
+
+export interface RegisterResponse {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phoneNumber: string;
+}
+
 export interface Credential {
   accessToken: string;
   refreshToken: string;
@@ -28,29 +44,13 @@ export interface RefreshTokenResponse {
   credential: Credential | undefined;
 }
 
-export interface RegisterRequest {
-  firstName: string;
-  lastName: string;
-  email: string;
-  phoneNumber: string;
-  password: string;
-  role: string;
-}
-
-export interface RegisterResponse {
-  firstName: string;
-  lastName: string;
-  email: string;
-  phoneNumber: string;
-  role: string;
-}
-
 export const AUTH_PACKAGE_NAME = 'auth';
 
 export interface AuthServiceClient {
   login(request: LoginRequest): Observable<LoginResponse>;
 
   refreshToken(request: RefreshTokenRequest): Observable<RefreshTokenResponse>;
+
   register(request: RegisterRequest): Observable<RegisterResponse>;
 }
 
@@ -76,7 +76,7 @@ export interface AuthServiceController {
 
 export function AuthServiceControllerMethods() {
   return function (constructor: Function) {
-    const grpcMethods: string[] = ['login', 'refreshToken', 're'];
+    const grpcMethods: string[] = ['login', 'refreshToken', 'register'];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(
         constructor.prototype,

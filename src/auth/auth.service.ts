@@ -10,6 +10,8 @@ import {
   LoginResponse,
   RefreshTokenRequest,
   RefreshTokenResponse,
+  RegisterRequest,
+  RegisterResponse,
 } from './auth.pb';
 import { RpcException } from '@nestjs/microservices';
 import { status } from '@grpc/grpc-js';
@@ -120,19 +122,18 @@ export class AuthService implements AuthServiceController {
     }
   }
 
-  async Register(request: RegisterRequest): Promise<RegisterResponse> {
+  async register(request: RegisterRequest): Promise<RegisterResponse> {
     try {
-      const existUser = this.userRepo.findUnique({
-        email: request.email,
-      });
+      const existUser = this.userRepo.getUserByEmail(request.email);
       if (existUser) {
-        throw new GrpcInternalException({
-          statusCode: 400,
-          message: 'Email Duplicate',
+        throw new RpcException({
+          code: status.ALREADY_EXISTS,
+          message: 'Duplicate Email',
         });
       } else {
         const hashedPassword = await bcrypt.hash(request.password, 12);
         const newUser = {
+          id: 'a',
           firstName: request.firstName,
           lastName: request.lastName,
           email: request.email,

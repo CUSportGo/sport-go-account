@@ -10,14 +10,16 @@ import { AuthService } from './auth.service';
 
 @Controller()
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService) { }
 
   @GrpcMethod('AuthService', 'Login')
   login(request: LoginRequest): Promise<LoginResponse> {
     return this.authService.login(request);
   }
+
   @GrpcMethod('AuthService', 'Register')
   registerUser(request: RegisterRequest): Promise<RegisterResponse> {
     return this.authService.register(request);
   }
+
 }

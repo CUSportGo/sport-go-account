@@ -25,7 +25,7 @@ export class AuthService implements AuthServiceController {
     private userRepo: UserRepository,
     private jwtService: JwtService,
     private configService: ConfigService,
-  ) {}
+  ) { }
 
   public async login(request: LoginRequest): Promise<LoginResponse> {
     try {
@@ -124,6 +124,7 @@ export class AuthService implements AuthServiceController {
     }
   }
 
+
   async register(request: RegisterRequest): Promise<RegisterResponse> {
     try {
       const existUser = await this.userRepo.getUserByEmail(request.email);
@@ -150,4 +151,5 @@ export class AuthService implements AuthServiceController {
       throw err;
     }
   }
+
 }

@@ -1,6 +1,6 @@
 import { Controller } from '@nestjs/common';
 import { GrpcMethod } from '@nestjs/microservices';
-import { LoginRequest, LoginResponse, LogoutRequest, LogoutResponse } from '../proto/auth';
+import { LoginRequest, LoginResponse } from './auth.pb';
 import { AuthService } from './auth.service';
 
 @Controller()
@@ -9,12 +9,7 @@ export class AuthController {
 
   @GrpcMethod('AuthService', 'Login')
   login(request: LoginRequest): Promise<LoginResponse> {
-    return this.authService.Login(request);
-  }
-
-  @GrpcMethod('AuthService', 'Logout')
-  logout(request: LogoutRequest): Promise<LogoutResponse> {
-    return this.authService.Logout(request);
+    return this.authService.login(request);
   }
 
 

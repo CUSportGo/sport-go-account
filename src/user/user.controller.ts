@@ -4,11 +4,11 @@ import { User } from 'src/model/user.dto';
 
 @Controller('user')
 export class UserController {
-  constructor(private userService: UserService) {}
+  constructor(private userService: UserService) { }
 
   @Get()
   findAllUsers() {
-    return null;
+    return this.userService.findAllUsers();
   }
 
   @Patch('ban/:userId')

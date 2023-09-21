@@ -1,13 +1,19 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, InternalServerErrorException } from '@nestjs/common';
 import { UserRepository } from '../repository/user.repository';
 import { Status } from '@prisma/client';
 
 @Injectable()
 export class UserService {
-  constructor(private userRepo: UserRepository) {}
+  constructor(private userRepo: UserRepository) { }
 
   findAllUsers() {
-    return null;
+    try {
+      const allUsers = this.userRepo.getAllUsers();
+      return allUsers;
+    } catch (e) {
+      console.log(e);
+      throw InternalServerErrorException;
+    }
   }
 
   async banUser(userId: string) {
@@ -33,3 +39,4 @@ export class UserService {
     return null;
   }
 }
+

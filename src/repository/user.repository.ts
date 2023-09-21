@@ -41,6 +41,22 @@ export class UserRepository {
     });
   }
 
+  async getAllUsers(): Promise<object[]> {
+    return this.db.user.findMany({
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        email: true,
+        phoneNumber: true,
+        role: true,
+        password: false,
+        refreshToken: false,
+        status: true,
+      },
+    });
+  }
+
   exclude<Key extends keyof User>(user: User, keys: Key[]): Omit<User, Key> {
     return Object.fromEntries(
       Object.entries(user).filter(([key]) => !keys.includes(key as Key)),

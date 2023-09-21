@@ -5,9 +5,9 @@ import { UserService } from './user.service';
 describe('UserController', () => {
   let controller: UserController;
   const mockUserService = {
-    findAllUsers:jest.fn(),
-    banUser:jest.fn(),
-    unbanUser:jest.fn(),
+    findAllUsers: jest.fn(),
+    banUser: jest.fn(),
+    unbanUser: jest.fn(),
   };
 
   beforeEach(async () => {

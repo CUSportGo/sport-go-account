@@ -21,9 +21,15 @@ model User {
   password     String
   role         Role     @default(USER)
   refreshToken String?
+  status       Status   @default(ACTIVE)
 }
 
 enum Role {
   USER
   SPORTAREA
+}
+
+enum Status {
+  ACTIVE
+  BANNED
 }

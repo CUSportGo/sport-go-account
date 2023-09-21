@@ -1,6 +1,11 @@
 import { Controller } from '@nestjs/common';
 import { GrpcMethod } from '@nestjs/microservices';
-import { LoginRequest, LoginResponse, LogoutRequest, LogoutResponse } from './auth.pb';
+import {
+  LoginRequest,
+  LoginResponse, LogoutRequest, LogoutResponse,
+  RegisterRequest,
+  RegisterResponse,
+} from './auth.pb';
 import { AuthService } from './auth.service';
 
 @Controller()
@@ -11,6 +16,12 @@ export class AuthController {
   login(request: LoginRequest): Promise<LoginResponse> {
     return this.authService.login(request);
   }
+
+  @GrpcMethod('AuthService', 'Register')
+  registerUser(request: RegisterRequest): Promise<RegisterResponse> {
+    return this.authService.register(request);
+  }
+
 
   @GrpcMethod('AuthService', 'Logout')
   logout(request: LogoutRequest): Promise<LogoutResponse> {

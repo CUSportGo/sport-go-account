@@ -4,18 +4,20 @@ import { join } from 'path';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
-  const app = await NestFactory.createMicroservice<MicroserviceOptions>(
-    AppModule,
-    {
-      transport: Transport.GRPC,
-      options: {
-        package: 'auth',
-        protoPath: join(__dirname, 'proto/auth.proto'),
-        url: 'localhost:3001',
-      },
-    },
-  );
+  const app = await NestFactory.create(AppModule);
 
-  await app.listen();
+  const authGrpcOptions: MicroserviceOptions = {
+    transport: Transport.GRPC,
+    options: {
+      package: 'auth',
+      protoPath: join(__dirname, 'proto/auth.proto'),
+      url: 'localhost:8081',
+    },
+  };
+
+  app.connectMicroservice(authGrpcOptions);
+
+  await app.startAllMicroservices();
+  await app.listen(8082);
 }
 bootstrap();

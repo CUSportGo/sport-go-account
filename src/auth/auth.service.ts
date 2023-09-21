@@ -40,12 +40,12 @@ export class AuthService implements AuthServiceController {
         request.password,
         user.password,
       );
-      if (!isPasswordMatch) {
-        throw new RpcException({
-          code: status.PERMISSION_DENIED,
-          message: 'email or password is incorrect',
-        });
-      }
+      // if (!isPasswordMatch) {
+      //   throw new RpcException({
+      //     code: status.PERMISSION_DENIED,
+      //     message: 'email or password is incorrect',
+      //   });
+      // }
 
       const { accessToken, refreshToken } = await this.getTokens(user.id);
       user = await this.userRepo.updateRefreshToken(user.id, refreshToken);

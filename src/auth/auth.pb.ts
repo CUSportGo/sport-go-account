@@ -27,6 +27,14 @@ export interface Credential {
   refreshTokenExpiresIn: number;
 }
 
+export interface GoogleUser {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  photoURL: string;
+}
+
 export interface LoginRequest {
   email: string;
   password: string;
@@ -52,6 +60,14 @@ export interface LogoutResponse {
   isDone: boolean;
 }
 
+export interface ValidateGoogleRequest {
+  user: GoogleUser | undefined;
+}
+
+export interface ValidateGoogleResponse {
+  credential: Credential | undefined;
+}
+
 export const AUTH_PACKAGE_NAME = "auth";
 
 export interface AuthServiceClient {
@@ -62,6 +78,8 @@ export interface AuthServiceClient {
   register(request: RegisterRequest): Observable<RegisterResponse>;
 
   logout(request: LogoutRequest): Observable<LogoutResponse>;
+
+  validateGoogle(request: ValidateGoogleRequest): Observable<ValidateGoogleResponse>;
 }
 
 export interface AuthServiceController {
@@ -74,11 +92,15 @@ export interface AuthServiceController {
   register(request: RegisterRequest): Promise<RegisterResponse> | Observable<RegisterResponse> | RegisterResponse;
 
   logout(request: LogoutRequest): Promise<LogoutResponse> | Observable<LogoutResponse> | LogoutResponse;
+
+  validateGoogle(
+    request: ValidateGoogleRequest,
+  ): Promise<ValidateGoogleResponse> | Observable<ValidateGoogleResponse> | ValidateGoogleResponse;
 }
 
 export function AuthServiceControllerMethods() {
   return function (constructor: Function) {
-    const grpcMethods: string[] = ["login", "refreshToken", "register", "logout"];
+    const grpcMethods: string[] = ["login", "refreshToken", "register", "logout", "validateGoogle"];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
       GrpcMethod("AuthService", method)(constructor.prototype[method], method, descriptor);

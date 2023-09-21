@@ -1,10 +1,14 @@
-import { Injectable, NotFoundException, InternalServerErrorException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { UserRepository } from '../repository/user.repository';
 import { Status } from '@prisma/client';
 
 @Injectable()
 export class UserService {
-  constructor(private userRepo: UserRepository) { }
+  constructor(private userRepo: UserRepository) {}
 
   findAllUsers() {
     try {
@@ -19,15 +23,15 @@ export class UserService {
   async banUser(userId: string) {
     try {
       const user = await this.userRepo.findUserById(userId);
-      if(!user){
+      if (!user) {
         throw new NotFoundException(`User with id ${userId} not found`);
       }
-      if(user.status === Status.BANNED){
-        return this.userRepo.exclude(user, ['password', 'refreshToken']);;
+      if (user.status === Status.BANNED) {
+        return this.userRepo.exclude(user, ['password', 'refreshToken']);
       }
       const bannedUser = await this.userRepo.update(userId, {
         status: Status.BANNED,
-      });      
+      });
       return this.userRepo.exclude(bannedUser, ['password', 'refreshToken']);
     } catch (e) {
       console.log(e);
@@ -35,8 +39,22 @@ export class UserService {
     }
   }
 
-  unbanUser() {
-    return null;
+  async unbanUser(userId: string) {
+    try {
+      const user = await this.userRepo.findUserById(userId);
+      if (!user) {
+        throw new NotFoundException(`User with id ${userId} not found`);
+      }
+      if (user.status === Status.ACTIVE) {
+        return this.userRepo.exclude(user, ['password', 'refreshToken']);
+      }
+      const bannedUser = await this.userRepo.update(userId, {
+        status: Status.ACTIVE,
+      });
+      return this.userRepo.exclude(bannedUser, ['password', 'refreshToken']);
+    } catch (e) {
+      console.log(e);
+      throw e;
+    }
   }
 }
-

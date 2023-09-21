@@ -27,12 +27,12 @@ export class AuthService implements AuthServiceController {
     private userRepo: UserRepository,
     private jwtService: JwtService,
     private configService: ConfigService,
-  ) { }
+  ) {}
 
   public async login(request: LoginRequest): Promise<LoginResponse> {
     try {
       let user = await this.userRepo.getUserByEmail(request.email);
-      if (!user) {
+      if (!user || user.googleID) {
         throw new RpcException({
           code: status.PERMISSION_DENIED,
           message: 'email or password is incorrect',
@@ -50,7 +50,9 @@ export class AuthService implements AuthServiceController {
       }
 
       const { accessToken, refreshToken } = await this.getTokens(user.id);
-      user = await this.userRepo.update(user.id, { refreshToken: refreshToken });
+      user = await this.userRepo.update(user.id, {
+        refreshToken: refreshToken,
+      });
       if (!user) {
         throw new RpcException({
           code: status.INTERNAL,
@@ -111,7 +113,9 @@ export class AuthService implements AuthServiceController {
       }
 
       const { accessToken, refreshToken } = await this.getTokens(user.id);
-      user = await this.userRepo.updateRefreshToken(user.id, refreshToken);
+      user = await this.userRepo.update(user.id, {
+        refreshToken: refreshToken,
+      });
       if (!user) {
         throw new RpcException({
           code: status.INTERNAL,
@@ -206,5 +210,4 @@ export class AuthService implements AuthServiceController {
       throw err;
     }
   }
-
 }

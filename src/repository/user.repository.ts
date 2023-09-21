@@ -13,15 +13,7 @@ export class UserRepository {
 
   async create(createUser: Prisma.UserCreateInput): Promise<User> {
     return await this.db.user.create({
-      data: {
-        id: createUser.id,
-        firstName: createUser.firstName,
-        lastName: createUser.lastName,
-        email: createUser.email,
-        phoneNumber: createUser.phoneNumber,
-        password: createUser.password,
-        role: createUser.role,
-      },
+      data: createUser,
     });
   }
 

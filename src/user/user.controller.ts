@@ -4,7 +4,7 @@ import { User } from 'src/model/user.dto';
 
 @Controller('user')
 export class UserController {
-  constructor(private userService: UserService) { }
+  constructor(private userService: UserService) {}
 
   @Get()
   findAllUsers() {
@@ -12,12 +12,12 @@ export class UserController {
   }
 
   @Patch('ban/:userId')
-  banUser(@Param('userId') userId: string) : Promise<User>{
+  banUser(@Param('userId') userId: string): Promise<User> {
     return this.userService.banUser(userId);
   }
 
   @Patch('unban/:userId')
-  unbanUser() {
-    return null;
+  unbanUser(@Param('userId') userId: string): Promise<User> {
+    return this.userService.unbanUser(userId);
   }
 }

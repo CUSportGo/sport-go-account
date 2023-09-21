@@ -5,7 +5,7 @@ import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class UserRepository {
-  constructor(private db: PrismaService) {}
+  constructor(private db: PrismaService) { }
 
   async getUserByEmail(email: string): Promise<User> {
     return this.db.user.findUnique({ where: { email: email } });
@@ -33,5 +33,27 @@ export class UserRepository {
         role: createUser.role,
       },
     });
+  }
+
+  async getAllUsers(): Promise<object[]> {
+    return this.db.user.findMany({
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        email: true,
+        phoneNumber: true,
+        role: true,
+        password: false,
+        refreshToken: false,
+        status: true
+      }
+    });
+  }
+
+  exclude<Key extends keyof User>(user: User, keys: Key[]): Omit<User, Key> {
+    return Object.fromEntries(
+      Object.entries(user).filter(([key]) => !keys.includes(key as Key)),
+    ) as Omit<User, Key>;
   }
 }

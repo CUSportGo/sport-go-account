@@ -1,12 +1,18 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { UserRepository } from '../repository/user.repository';
 
 @Injectable()
 export class UserService {
-  constructor(private userRepo: UserRepository) {}
+  constructor(private userRepo: UserRepository) { }
 
   findAllUsers() {
-    return null;
+    try {
+      const allUsers = this.userRepo.getAllUsers();
+      return allUsers;
+    } catch (e) {
+      console.log(e);
+      throw InternalServerErrorException;
+    }
   }
 
   banUser() {
@@ -17,3 +23,7 @@ export class UserService {
     return null;
   }
 }
+function exclude(allUsers: Promise<{ id: string; createdAt: Date; updatedAt: Date; firstName: string; lastName: string; email: string; phoneNumber: string; password: string; role: import(".prisma/client").$Enums.Role; refreshToken: string; }[]>) {
+  throw new Error('Function not implemented.');
+}
+

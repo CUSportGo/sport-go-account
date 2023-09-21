@@ -17,9 +17,9 @@ import {
 } from './auth.pb';
 import { RpcException } from '@nestjs/microservices';
 import { status } from '@grpc/grpc-js';
-import { GrpcInternalException } from 'nestjs-grpc-exceptions';
 import { $Enums, Prisma } from '@prisma/client';
 import { v4 as uuidv4 } from 'uuid';
+import { Role } from '@prisma/client';
 
 @Injectable()
 export class AuthService implements AuthServiceController {
@@ -27,7 +27,7 @@ export class AuthService implements AuthServiceController {
     private userRepo: UserRepository,
     private jwtService: JwtService,
     private configService: ConfigService,
-  ) {}
+  ) { }
 
   public async login(request: LoginRequest): Promise<LoginResponse> {
     try {
@@ -50,7 +50,7 @@ export class AuthService implements AuthServiceController {
       }
 
       const { accessToken, refreshToken } = await this.getTokens(user.id);
-      user = await this.userRepo.updateRefreshToken(user.id, refreshToken);
+      user = await this.userRepo.update(user.id, { refreshToken: refreshToken });
       if (!user) {
         throw new RpcException({
           code: status.INTERNAL,
@@ -182,22 +182,21 @@ export class AuthService implements AuthServiceController {
 
   async register(request: RegisterRequest): Promise<RegisterResponse> {
     try {
-      const existUser = this.userRepo.getUserByEmail(request.email);
+      const existUser = await this.userRepo.getUserByEmail(request.email);
       if (existUser) {
-        throw new GrpcInternalException({
-          statusCode: 400,
-          message: 'Email Duplicate',
+        throw new RpcException({
+          code: status.ALREADY_EXISTS,
+          message: 'Duplicate Email',
         });
       } else {
         const hashedPassword = await bcrypt.hash(request.password, 12);
-        const userId = uuidv4();
-        const newUser: Prisma.UserCreateInput = {
-          id: userId,
+        const newUser = {
+          id: uuidv4(),
           firstName: request.firstName,
           lastName: request.lastName,
           email: request.email,
           phoneNumber: request.phoneNumber,
-          role: request.role as $Enums.Role,
+          role: request.role == 'USER' ? Role.USER : Role.SPORTAREA,
           password: hashedPassword,
         };
         return await this.userRepo.create(newUser);
@@ -207,4 +206,5 @@ export class AuthService implements AuthServiceController {
       throw err;
     }
   }
+
 }

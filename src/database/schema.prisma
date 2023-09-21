@@ -22,10 +22,16 @@ model User {
   photoURL     String?
   role         Role     @default(USER)
   refreshToken String?
+  status       Status   @default(ACTIVE)
   googleID     String?  @unique
 }
 
 enum Role {
   USER
   SPORTAREA
+}
+
+enum Status {
+  ACTIVE
+  BANNED
 }

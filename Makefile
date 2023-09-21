@@ -3,3 +3,8 @@ proto:
 
 server:
 	yarn start:dev
+
+prisma:
+	yarn prisma generate
+	yarn prisma db push --accept-data-loss
+	yarn prisma migrate dev

@@ -35,3 +35,7 @@ enum Status {
   ACTIVE
   BANNED
 }
+
+model Blacklist {
+  outDatedAccessToken String @unique
+}

@@ -1,5 +1,6 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, NotFoundException, InternalServerErrorException } from '@nestjs/common';
 import { UserRepository } from '../repository/user.repository';
+import { Status } from '@prisma/client';
 
 @Injectable()
 export class UserService {
@@ -15,15 +16,27 @@ export class UserService {
     }
   }
 
-  banUser() {
-    return null;
+  async banUser(userId: string) {
+    try {
+      const user = await this.userRepo.findUserById(userId);
+      if(!user){
+        throw new NotFoundException(`User with id ${userId} not found`);
+      }
+      if(user.status === Status.BANNED){
+        return this.userRepo.exclude(user, ['password', 'refreshToken']);;
+      }
+      const bannedUser = await this.userRepo.update(userId, {
+        status: Status.BANNED,
+      });      
+      return this.userRepo.exclude(bannedUser, ['password', 'refreshToken']);
+    } catch (e) {
+      console.log(e);
+      throw e;
+    }
   }
 
   unbanUser() {
     return null;
   }
-}
-function exclude(allUsers: Promise<{ id: string; createdAt: Date; updatedAt: Date; firstName: string; lastName: string; email: string; phoneNumber: string; password: string; role: import(".prisma/client").$Enums.Role; refreshToken: string; }[]>) {
-  throw new Error('Function not implemented.');
 }
 

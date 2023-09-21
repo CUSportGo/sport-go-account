@@ -1,5 +1,6 @@
-import { Controller, Get, Patch } from '@nestjs/common';
+import { Controller, Get, Param, Patch } from '@nestjs/common';
 import { UserService } from './user.service';
+import { User } from 'src/model/user.dto';
 
 @Controller('user')
 export class UserController {
@@ -11,8 +12,8 @@ export class UserController {
   }
 
   @Patch('ban/:userId')
-  banUser() {
-    return null;
+  banUser(@Param('userId') userId: string) : Promise<User>{
+    return this.userService.banUser(userId);
   }
 
   @Patch('unban/:userId')

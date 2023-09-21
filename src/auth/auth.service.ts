@@ -48,7 +48,7 @@ export class AuthService implements AuthServiceController {
       }
 
       const { accessToken, refreshToken } = await this.getTokens(user.id);
-      user = await this.userRepo.updateRefreshToken(user.id, refreshToken);
+      user = await this.userRepo.update(user.id, { refreshToken: refreshToken });
       if (!user) {
         throw new RpcException({
           code: status.INTERNAL,

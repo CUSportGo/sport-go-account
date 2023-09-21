@@ -5101,7 +5101,7 @@ ts-proto-descriptors@1.15.0:
     long "^5.2.3"
     protobufjs "^7.2.4"
 
-ts-proto@^1.157.1:
+ts-proto@^1.157.0:
   version "1.157.1"
   resolved "https://registry.yarnpkg.com/ts-proto/-/ts-proto-1.157.1.tgz#c35c31c3fc471bd884f1690fab631bd7435d3416"
   integrity sha512-HgBaVkfT8O7260+IA/LI31bahrIIUgEjjW9Jh69ITN0dmlYevKX5pFteUkB/tS664B/c3uLHm0AyjFOyfyjNYg==
@@ -5258,6 +5258,11 @@ uuid@9.0.0:
   version "9.0.0"
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-9.0.0.tgz#592f550650024a38ceb0c562f2f6aa435761efb5"
   integrity sha512-MXcSTerfPa4uqyzStbRoTgt5XIe3x5+42+q1sDuy3R5MDk66URdLMOZe5aPX/SQd+kuYAh0FdP/pO28IkQyTeg==
+
+uuid@^9.0.1:
+  version "9.0.1"
+  resolved "https://registry.yarnpkg.com/uuid/-/uuid-9.0.1.tgz#e188d4c8853cc722220392c424cd637f32293f30"
+  integrity sha512-b+1eJOlsR9K8HJpow9Ok3fiWOWSIcIzXodvv0rQjVoOVNpWMpxf1wZNpt4y9h10odCNrqnYp1OBzRktckBe3sA==
 
 v8-compile-cache-lib@^3.0.1:
   version "3.0.1"

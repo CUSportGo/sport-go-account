@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaClient, Status, User } from '@prisma/client';
 import { PrismaService } from '../prisma/service/prisma.service';
 import { Prisma } from '@prisma/client';
@@ -13,15 +13,7 @@ export class UserRepository {
 
   async create(createUser: Prisma.UserCreateInput): Promise<User> {
     return await this.db.user.create({
-      data: {
-        id: createUser.id,
-        firstName: createUser.firstName,
-        lastName: createUser.lastName,
-        email: createUser.email,
-        phoneNumber: createUser.phoneNumber,
-        password: createUser.password,
-        role: createUser.role,
-      },
+      data: createUser,
     });
   }
 

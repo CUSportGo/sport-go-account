@@ -12,10 +12,12 @@ import {
   RefreshTokenResponse,
   RegisterRequest,
   RegisterResponse,
+  ValidateGoogleRequest,
+  ValidateGoogleResponse,
 } from './auth.pb';
 import { RpcException } from '@nestjs/microservices';
 import { status } from '@grpc/grpc-js';
-import { GrpcPermissionDeniedException } from 'nestjs-grpc-exceptions';
+import { $Enums, Prisma } from '@prisma/client';
 import { v4 as uuidv4 } from 'uuid';
 import { Role } from '@prisma/client';
 
@@ -25,12 +27,12 @@ export class AuthService implements AuthServiceController {
     private userRepo: UserRepository,
     private jwtService: JwtService,
     private configService: ConfigService,
-  ) { }
+  ) {}
 
   public async login(request: LoginRequest): Promise<LoginResponse> {
     try {
       let user = await this.userRepo.getUserByEmail(request.email);
-      if (!user) {
+      if (!user || user.googleID) {
         throw new RpcException({
           code: status.PERMISSION_DENIED,
           message: 'email or password is incorrect',
@@ -48,7 +50,9 @@ export class AuthService implements AuthServiceController {
       }
 
       const { accessToken, refreshToken } = await this.getTokens(user.id);
-      user = await this.userRepo.update(user.id, { refreshToken: refreshToken });
+      user = await this.userRepo.update(user.id, {
+        refreshToken: refreshToken,
+      });
       if (!user) {
         throw new RpcException({
           code: status.INTERNAL,
@@ -80,6 +84,62 @@ export class AuthService implements AuthServiceController {
     request: RefreshTokenRequest,
   ): Promise<RefreshTokenResponse> {
     return null;
+  }
+
+  public async validateGoogle(
+    request: ValidateGoogleRequest,
+  ): Promise<ValidateGoogleResponse> {
+    try {
+      let user = await this.userRepo.getUserByEmail(request.user.email);
+      if (!user) {
+        const userId = uuidv4();
+        const createUser: Prisma.UserCreateInput = {
+          id: userId,
+          firstName: request.user.firstName,
+          lastName: request.user.lastName,
+          email: request.user.email,
+          photoURL: request.user.photoURL,
+          role: $Enums.Role.USER,
+          googleID: request.user.id,
+        };
+        user = await this.userRepo.create(createUser);
+      } else {
+        if (!user.googleID) {
+          throw new RpcException({
+            code: status.PERMISSION_DENIED,
+            message: 'This email is already taken',
+          });
+        }
+      }
+
+      const { accessToken, refreshToken } = await this.getTokens(user.id);
+      user = await this.userRepo.update(user.id, {
+        refreshToken: refreshToken,
+      });
+      if (!user) {
+        throw new RpcException({
+          code: status.INTERNAL,
+          message: 'internal server error',
+        });
+      }
+
+      const credential: Credential = {
+        accessToken: accessToken,
+        refreshToken: refreshToken,
+        accessTokenExpiresIn: 600,
+        refreshTokenExpiresIn: 604800,
+      };
+      return { credential };
+    } catch (err: any) {
+      console.log(err);
+      if (!(err instanceof RpcException)) {
+        throw new RpcException({
+          code: status.INTERNAL,
+          message: 'internal server error',
+        });
+      }
+      throw err;
+    }
   }
 
   private async getTokens(userId: string) {
@@ -124,7 +184,6 @@ export class AuthService implements AuthServiceController {
     }
   }
 
-
   async register(request: RegisterRequest): Promise<RegisterResponse> {
     try {
       const existUser = await this.userRepo.getUserByEmail(request.email);
@@ -151,5 +210,4 @@ export class AuthService implements AuthServiceController {
       throw err;
     }
   }
-
 }

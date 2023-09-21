@@ -6,6 +6,7 @@ service AuthService {
   rpc Login(LoginRequest) returns (LoginResponse) {}
   rpc RefreshToken(RefreshTokenRequest) returns (RefreshTokenResponse) {}
   rpc Register(RegisterRequest) returns (RegisterResponse) {}
+  rpc ValidateGoogle(ValidateGoogleRequest) returns (ValidateGoogleResponse) {}
 }
 
 message RegisterRequest {
@@ -31,6 +32,14 @@ message Credential {
   int32 refresh_token_expires_in = 4;
 }
 
+message GoogleUser {
+  string id = 1;
+  string firstName = 2;
+  string lastName = 3;
+  string email = 4;
+  string photoURL = 5;
+}
+
 message LoginRequest {
   string email = 1;
   string password = 2;
@@ -45,5 +54,13 @@ message RefreshTokenRequest {
 }
 
 message RefreshTokenResponse {
+  Credential credential = 1;
+}
+
+message ValidateGoogleRequest {
+  GoogleUser user = 1;
+}
+
+message ValidateGoogleResponse {
   Credential credential = 1;
 }

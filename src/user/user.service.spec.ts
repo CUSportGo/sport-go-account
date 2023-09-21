@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserService } from './user.service';
+import { UserRepository } from '../repository/user.repository';
 
 describe('UserService', () => {
   let service: UserService;
@@ -14,7 +15,7 @@ describe('UserService', () => {
       providers: [
         UserService,
         {
-          provide: 'UserRepository',
+          provide: UserRepository,
           useValue: mockUserRepository,
         },
       ],

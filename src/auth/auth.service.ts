@@ -22,7 +22,8 @@ import { status } from '@grpc/grpc-js';
 import { $Enums, Prisma } from '@prisma/client';
 import { v4 as uuidv4 } from 'uuid';
 import { Role } from '@prisma/client';
-import { BlacklistRepository } from 'src/repository/blacklist.repository';
+import { BlacklistRepository } from '../repository/blacklist.repository';
+import { JwtPayload } from './strategies/accessToken.strategy';
 
 @Injectable()
 export class AuthService implements AuthServiceController {
@@ -223,6 +224,16 @@ export class AuthService implements AuthServiceController {
         outDatedAccessToken: request.credential.accessToken,
       })
 
+      let credential = this.jwtService.decode(request.credential.refreshToken) as JwtPayload;
+      let userId = credential.sub
+
+      await this.userRepo.update(userId, {
+        refreshToken: null,
+      })
+
+
+
+
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {
 
@@ -233,30 +244,6 @@ export class AuthService implements AuthServiceController {
       }
       throw e
 
-    }
-
-    interface JwtToken {
-
-      sub: string
-      registeredClaims: { issuer: string, expiredAt: number, issuedAt: number }
-      iat: number
-      exp: number
-
-    }
-
-
-    let credential = this.jwtService.decode(request.credential.refreshToken) as JwtToken;
-    let userId = credential.sub
-
-    try {
-      await this.userRepo.update(userId, {
-        refreshToken: null,
-      })
-    } catch {
-      throw new RpcException({
-        code: status.INTERNAL,
-        message: 'internal server error',
-      });
     }
 
 

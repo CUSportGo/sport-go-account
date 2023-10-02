@@ -1,10 +1,10 @@
-import { Controller, Get, Param, Patch } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
 import { UserService } from './user.service';
 import { User } from 'src/model/user.dto';
 
 @Controller('user')
 export class UserController {
-  constructor(private userService: UserService) {}
+  constructor(private userService: UserService) { }
 
   @Get()
   findAllUsers() {
@@ -19,5 +19,10 @@ export class UserController {
   @Patch('unban/:userId')
   unbanUser(@Param('userId') userId: string): Promise<User> {
     return this.userService.unbanUser(userId);
+  }
+
+  @Post('forgetPassword')
+  forgotPassword(@Body('email') email: string) {
+    return this.forgotPassword(email);
   }
 }

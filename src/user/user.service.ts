@@ -8,7 +8,7 @@ import { Status } from '@prisma/client';
 
 @Injectable()
 export class UserService {
-  constructor(private userRepo: UserRepository) {}
+  constructor(private userRepo: UserRepository) { }
 
   findAllUsers() {
     try {
@@ -55,6 +55,18 @@ export class UserService {
     } catch (e) {
       console.log(e);
       throw e;
+    }
+  }
+
+  async forgotPassword(email: string) {
+    try {
+      const user = await this.userRepo.getUserByEmail(email);
+      if (!user) {
+        throw new NotFoundException(`User with email :${user} not found`);
+      }
+      // owen please helps me T_T
+    } catch (e) {
+
     }
   }
 }

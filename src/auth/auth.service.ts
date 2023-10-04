@@ -242,7 +242,10 @@ export class AuthService implements AuthServiceController {
         )
 
       }
-      throw e
+      throw new RpcException({
+        code: status.INTERNAL,
+        message: e.message,
+      });
 
     }
 

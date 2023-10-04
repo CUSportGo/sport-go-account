@@ -12,6 +12,8 @@ import {
   RefreshTokenResponse,
   RegisterRequest,
   RegisterResponse,
+  ResetPasswordRequest,
+  ResetPasswordResponse,
   ValidateGoogleRequest,
   ValidateGoogleResponse,
 } from './auth.pb';
@@ -27,7 +29,7 @@ export class AuthService implements AuthServiceController {
     private userRepo: UserRepository,
     private jwtService: JwtService,
     private configService: ConfigService,
-  ) {}
+  ) { }
 
   public async login(request: LoginRequest): Promise<LoginResponse> {
     try {
@@ -208,6 +210,26 @@ export class AuthService implements AuthServiceController {
     } catch (err) {
       console.log(err);
       throw err;
+    }
+  }
+
+
+  async resetPassword(request: ResetPasswordRequest): Promise<ResetPasswordResponse> {
+    try {
+      const user = await this.userRepo.getUserByEmail(request.email)
+      const hashedPassword = await bcrypt.hash(request.newPassword, 12);
+
+      await this.userRepo.update(user.id, {
+        password: hashedPassword,
+      })
+
+      return { isDone: true }
+    } catch (err: any) {
+      console.log(err);
+      throw new RpcException({
+        code: status.INTERNAL,
+        message: 'internal server error',
+      });
     }
   }
 }

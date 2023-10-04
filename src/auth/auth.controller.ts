@@ -5,6 +5,8 @@ import {
   LoginResponse,
   RegisterRequest,
   RegisterResponse,
+  ResetPasswordRequest,
+  ResetPasswordResponse,
   ValidateGoogleRequest,
   ValidateGoogleResponse,
 } from './auth.pb';
@@ -29,5 +31,12 @@ export class AuthController {
     request: ValidateGoogleRequest,
   ): Promise<ValidateGoogleResponse> {
     return this.authService.validateGoogle(request);
+  }
+
+  @GrpcMethod('AuthService', 'ResetPassword')
+  resetPassword(
+    request: ResetPasswordRequest,
+  ): Promise<ResetPasswordResponse> {
+    return this.authService.resetPassword(request);
   }
 }

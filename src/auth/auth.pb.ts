@@ -1,8 +1,8 @@
 /* eslint-disable */
-import { GrpcMethod, GrpcStreamMethod } from '@nestjs/microservices';
-import { Observable } from 'rxjs';
+import { GrpcMethod, GrpcStreamMethod } from "@nestjs/microservices";
+import { Observable } from "rxjs";
 
-export const protobufPackage = 'auth';
+export const protobufPackage = "auth";
 
 export interface RegisterRequest {
   firstName: string;
@@ -52,6 +52,14 @@ export interface RefreshTokenResponse {
   credential: Credential | undefined;
 }
 
+export interface LogoutRequest {
+  credential: Credential | undefined;
+}
+
+export interface LogoutResponse {
+  isDone: boolean;
+}
+
 export interface ValidateGoogleRequest {
   user: GoogleUser | undefined;
 }
@@ -60,7 +68,7 @@ export interface ValidateGoogleResponse {
   credential: Credential | undefined;
 }
 
-export const AUTH_PACKAGE_NAME = 'auth';
+export const AUTH_PACKAGE_NAME = "auth";
 
 export interface AuthServiceClient {
   login(request: LoginRequest): Observable<LoginResponse>;
@@ -69,70 +77,40 @@ export interface AuthServiceClient {
 
   register(request: RegisterRequest): Observable<RegisterResponse>;
 
-  validateGoogle(
-    request: ValidateGoogleRequest,
-  ): Observable<ValidateGoogleResponse>;
+  logout(request: LogoutRequest): Observable<LogoutResponse>;
+
+  validateGoogle(request: ValidateGoogleRequest): Observable<ValidateGoogleResponse>;
 }
 
 export interface AuthServiceController {
-  login(
-    request: LoginRequest,
-  ): Promise<LoginResponse> | Observable<LoginResponse> | LoginResponse;
+  login(request: LoginRequest): Promise<LoginResponse> | Observable<LoginResponse> | LoginResponse;
 
   refreshToken(
     request: RefreshTokenRequest,
-  ):
-    | Promise<RefreshTokenResponse>
-    | Observable<RefreshTokenResponse>
-    | RefreshTokenResponse;
+  ): Promise<RefreshTokenResponse> | Observable<RefreshTokenResponse> | RefreshTokenResponse;
 
-  register(
-    request: RegisterRequest,
-  ):
-    | Promise<RegisterResponse>
-    | Observable<RegisterResponse>
-    | RegisterResponse;
+  register(request: RegisterRequest): Promise<RegisterResponse> | Observable<RegisterResponse> | RegisterResponse;
+
+  logout(request: LogoutRequest): Promise<LogoutResponse> | Observable<LogoutResponse> | LogoutResponse;
 
   validateGoogle(
     request: ValidateGoogleRequest,
-  ):
-    | Promise<ValidateGoogleResponse>
-    | Observable<ValidateGoogleResponse>
-    | ValidateGoogleResponse;
+  ): Promise<ValidateGoogleResponse> | Observable<ValidateGoogleResponse> | ValidateGoogleResponse;
 }
 
 export function AuthServiceControllerMethods() {
   return function (constructor: Function) {
-    const grpcMethods: string[] = [
-      'login',
-      'refreshToken',
-      'register',
-      'validateGoogle',
-    ];
+    const grpcMethods: string[] = ["login", "refreshToken", "register", "logout", "validateGoogle"];
     for (const method of grpcMethods) {
-      const descriptor: any = Reflect.getOwnPropertyDescriptor(
-        constructor.prototype,
-        method,
-      );
-      GrpcMethod('AuthService', method)(
-        constructor.prototype[method],
-        method,
-        descriptor,
-      );
+      const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+      GrpcMethod("AuthService", method)(constructor.prototype[method], method, descriptor);
     }
     const grpcStreamMethods: string[] = [];
     for (const method of grpcStreamMethods) {
-      const descriptor: any = Reflect.getOwnPropertyDescriptor(
-        constructor.prototype,
-        method,
-      );
-      GrpcStreamMethod('AuthService', method)(
-        constructor.prototype[method],
-        method,
-        descriptor,
-      );
+      const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+      GrpcStreamMethod("AuthService", method)(constructor.prototype[method], method, descriptor);
     }
   };
 }
 
-export const AUTH_SERVICE_NAME = 'AuthService';
+export const AUTH_SERVICE_NAME = "AuthService";

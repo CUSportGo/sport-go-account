@@ -3,6 +3,7 @@ import { AuthService } from './auth.service';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { UserRepository } from '../repository/user.repository';
+import { BlacklistRepository } from '../repository/blacklist.repository';
 describe('AuthService', () => {
   let service: AuthService;
   const mockJwtService = {
@@ -20,6 +21,9 @@ describe('AuthService', () => {
   const mockConfigService = {
     get: jest.fn(),
   }
+  const mockBlacklistRepository = {
+    addOutdatedToken: jest.fn(),
+  }
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [AuthService,
@@ -36,6 +40,10 @@ describe('AuthService', () => {
         {
           provide: ConfigService,
           useValue: mockConfigService,
+        },
+        {
+          provide: BlacklistRepository,
+          useValue: mockBlacklistRepository,
         }
       ],
     }).compile();

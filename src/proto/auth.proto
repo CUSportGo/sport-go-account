@@ -6,6 +6,7 @@ service AuthService {
   rpc Login(LoginRequest) returns (LoginResponse) {}
   rpc RefreshToken(RefreshTokenRequest) returns (RefreshTokenResponse) {}
   rpc Register(RegisterRequest) returns (RegisterResponse) {}
+  rpc Logout(LogoutRequest) returns (LogoutResponse) {}
   rpc ValidateGoogle(ValidateGoogleRequest) returns (ValidateGoogleResponse) {}
 }
 
@@ -57,6 +58,13 @@ message RefreshTokenResponse {
   Credential credential = 1;
 }
 
+message LogoutRequest {
+  Credential credential = 1;
+}
+
+message LogoutResponse {
+  bool is_done = 1;
+}
 message ValidateGoogleRequest {
   GoogleUser user = 1;
 }

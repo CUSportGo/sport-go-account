@@ -2,7 +2,7 @@ import { Controller } from '@nestjs/common';
 import { GrpcMethod } from '@nestjs/microservices';
 import {
   LoginRequest,
-  LoginResponse,
+  LoginResponse, LogoutRequest, LogoutResponse,
   RegisterRequest,
   RegisterResponse,
   ValidateGoogleRequest,
@@ -23,6 +23,13 @@ export class AuthController {
   registerUser(request: RegisterRequest): Promise<RegisterResponse> {
     return this.authService.register(request);
   }
+
+
+  @GrpcMethod('AuthService', 'Logout')
+  logout(request: LogoutRequest): Promise<LogoutResponse> {
+    return this.authService.logout(request);
+  }
+
 
   @GrpcMethod('AuthService', 'ValidateGoogle')
   validateGoogle(

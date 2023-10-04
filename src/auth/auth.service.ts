@@ -8,6 +8,8 @@ import {
   Credential,
   LoginRequest,
   LoginResponse,
+  LogoutRequest,
+  LogoutResponse,
   RefreshTokenRequest,
   RefreshTokenResponse,
   RegisterRequest,
@@ -20,14 +22,17 @@ import { status } from '@grpc/grpc-js';
 import { $Enums, Prisma } from '@prisma/client';
 import { v4 as uuidv4 } from 'uuid';
 import { Role } from '@prisma/client';
+import { BlacklistRepository } from '../repository/blacklist.repository';
+import { JwtPayload } from './strategies/accessToken.strategy';
 
 @Injectable()
 export class AuthService implements AuthServiceController {
   constructor(
     private userRepo: UserRepository,
+    private blacklistRepo: BlacklistRepository,
     private jwtService: JwtService,
     private configService: ConfigService,
-  ) {}
+  ) { }
 
   public async login(request: LoginRequest): Promise<LoginResponse> {
     try {
@@ -210,4 +215,44 @@ export class AuthService implements AuthServiceController {
       throw err;
     }
   }
+
+
+  public async logout(request: LogoutRequest): Promise<LogoutResponse> {
+
+    try {
+      await this.blacklistRepo.addOutdatedToken({
+        outDatedAccessToken: request.credential.accessToken,
+      })
+
+      let credential = this.jwtService.decode(request.credential.refreshToken) as JwtPayload;
+      let userId = credential.sub
+
+      await this.userRepo.update(userId, {
+        refreshToken: null,
+      })
+
+
+
+
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+
+        console.log(
+          'There is a unique constraint violation, a blacklist should not outdated twice!'
+        )
+
+      }
+      throw new RpcException({
+        code: status.INTERNAL,
+        message: e.message,
+      });
+
+    }
+
+
+    const response: LogoutResponse = { isDone: true };
+    return response;
+
+  }
+
 }

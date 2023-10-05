@@ -57,16 +57,4 @@ export class UserService {
       throw e;
     }
   }
-
-  async forgotPassword(email: string) {
-    try {
-      const user = await this.userRepo.getUserByEmail(email);
-      if (!user) {
-        throw new NotFoundException(`User with email :${user} not found`);
-      }
-      // owen please helps me T_T
-    } catch (e) {
-
-    }
-  }
 }

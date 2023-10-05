@@ -20,9 +20,4 @@ export class UserController {
   unbanUser(@Param('userId') userId: string): Promise<User> {
     return this.userService.unbanUser(userId);
   }
-
-  @Post('forgetPassword')
-  forgotPassword(@Body('email') email: string) {
-    return this.forgotPassword(email);
-  }
 }

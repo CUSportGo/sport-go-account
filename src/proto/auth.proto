@@ -8,6 +8,7 @@ service AuthService {
   rpc Register(RegisterRequest) returns (RegisterResponse) {}
   rpc Logout(LogoutRequest) returns (LogoutResponse) {}
   rpc ValidateGoogle(ValidateGoogleRequest) returns (ValidateGoogleResponse) {}
+  rpc ForgotPassword(ForgotPasswordRequest) returns (ForgotPasswordResponse) {}
 }
 
 message RegisterRequest {
@@ -20,7 +21,7 @@ message RegisterRequest {
 }
 
 message RegisterResponse {
-string firstName =1;
+  string firstName =1;
   string lastName =2;
   string email =3;
   string phoneNumber =4;
@@ -71,4 +72,12 @@ message ValidateGoogleRequest {
 
 message ValidateGoogleResponse {
   Credential credential = 1;
+}
+
+message ForgotPasswordRequest {
+  string email = 1;
+}
+
+message ForgotPasswordResponse {
+  string forgot_password_url = 1;
 }

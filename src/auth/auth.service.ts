@@ -255,4 +255,22 @@ export class AuthService implements AuthServiceController {
 
   }
 
+
+  async forgotPassword(email: string) {
+    try {
+      const user = await this.userRepo.getUserByEmail(email);
+      if (!user) {
+        throw new RpcException({
+          code: status.NOT_FOUND,
+          message: 'user not found',
+        });
+      }
+      // gen token
+      const userToken = (await this.getTokens(user.id)).accessToken;
+      return { resetPasswordUrl: "http://localhost:3000/reset-password/" + userToken }
+    } catch (e) {
+      console.log(e);
+      throw e;
+    }
+  }
 }

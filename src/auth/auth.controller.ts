@@ -37,4 +37,9 @@ export class AuthController {
   ): Promise<ValidateGoogleResponse> {
     return this.authService.validateGoogle(request);
   }
+
+  @GrpcMethod('AuthService', 'ValidateToken')
+  validateToken(token: string): Promise<boolean> {
+    return this.authService.validateToken(token);
+  }
 }

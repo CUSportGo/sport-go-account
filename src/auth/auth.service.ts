@@ -32,7 +32,7 @@ export class AuthService implements AuthServiceController {
     private blacklistRepo: BlacklistRepository,
     private jwtService: JwtService,
     private configService: ConfigService,
-  ) { }
+  ) {}
 
   public async login(request: LoginRequest): Promise<LoginResponse> {
     try {
@@ -147,6 +147,33 @@ export class AuthService implements AuthServiceController {
     }
   }
 
+  public async validateToken(token: string): Promise<boolean> {
+    try {
+      const decodedToken = this.jwtService.verify(token, {
+        secret: this.configService.get<string>('JWT_ACCESS_SECRET'),
+      });
+      if (
+        decodedToken.registeredClaims.issuer !==
+        this.configService.get<string>('TOKEN_ISSUER')
+      ) {
+        return false;
+      }
+      if (decodedToken.registeredClaims.expiredAt < Date.now()) {
+        return false;
+      }
+      return true;
+    } catch (err) {
+      console.log(err);
+      if (!(err instanceof RpcException)) {
+        throw new RpcException({
+          code: status.INTERNAL,
+          message: 'internal server error',
+        });
+      }
+      throw err;
+    }
+  }
+
   private async getTokens(userId: string) {
     try {
       const accessToken = await this.jwtService.signAsync(
@@ -216,43 +243,33 @@ export class AuthService implements AuthServiceController {
     }
   }
 
-
   public async logout(request: LogoutRequest): Promise<LogoutResponse> {
-
     try {
       await this.blacklistRepo.addOutdatedToken({
         outDatedAccessToken: request.credential.accessToken,
-      })
+      });
 
-      let credential = this.jwtService.decode(request.credential.refreshToken) as JwtPayload;
-      let userId = credential.sub
+      let credential = this.jwtService.decode(
+        request.credential.refreshToken,
+      ) as JwtPayload;
+      let userId = credential.sub;
 
       await this.userRepo.update(userId, {
         refreshToken: null,
-      })
-
-
-
-
+      });
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {
-
         console.log(
-          'There is a unique constraint violation, a blacklist should not outdated twice!'
-        )
-
+          'There is a unique constraint violation, a blacklist should not outdated twice!',
+        );
       }
       throw new RpcException({
         code: status.INTERNAL,
         message: e.message,
       });
-
     }
-
 
     const response: LogoutResponse = { isDone: true };
     return response;
-
   }
-
 }

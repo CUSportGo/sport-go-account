@@ -61,6 +61,15 @@ export interface LogoutRequest {
   credential: Credential | undefined;
 }
 
+export interface ResetPasswordRequest {
+  accessToken: string;
+  password: string;
+}
+
+export interface ResetPasswordResponse {
+  isDone: boolean;
+}
+
 export interface LogoutResponse {
   isDone: boolean;
 }
@@ -73,6 +82,8 @@ export interface AuthServiceClient {
   refreshToken(request: RefreshTokenRequest): Observable<RefreshTokenResponse>;
 
   register(request: RegisterRequest): Observable<RegisterResponse>;
+
+  resetPassword(request: ResetPasswordRequest): Observable<ResetPasswordResponse>;
 
   validateOAuth(request: ValidateOAuthRequest): Observable<LoginResponse>;
 
@@ -88,6 +99,10 @@ export interface AuthServiceController {
 
   register(request: RegisterRequest): Promise<RegisterResponse> | Observable<RegisterResponse> | RegisterResponse;
 
+  resetPassword(
+    request: ResetPasswordRequest,
+  ): Promise<ResetPasswordResponse> | Observable<ResetPasswordResponse> | ResetPasswordResponse;
+
   validateOAuth(request: ValidateOAuthRequest): Promise<LoginResponse> | Observable<LoginResponse> | LoginResponse;
 
   logout(request: LogoutRequest): Promise<LogoutResponse> | Observable<LogoutResponse> | LogoutResponse;
@@ -95,7 +110,7 @@ export interface AuthServiceController {
 
 export function AuthServiceControllerMethods() {
   return function (constructor: Function) {
-    const grpcMethods: string[] = ["login", "refreshToken", "register", "validateOAuth", "logout"];
+    const grpcMethods: string[] = ["login", "refreshToken", "register", "resetPassword", "validateOAuth", "logout"];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
       GrpcMethod("AuthService", method)(constructor.prototype[method], method, descriptor);

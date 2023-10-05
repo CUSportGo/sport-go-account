@@ -7,13 +7,17 @@ import {
   LogoutResponse,
   RegisterRequest,
   RegisterResponse,
-  ValidateOAuthRequest,
+  ResetPasswordRequest,
+  ResetPasswordResponse,
+  // ValidateGoogleRequest,
+  // ValidateGoogleResponse,
+  ValidateOAuthRequest
 } from './auth.pb';
 import { AuthService } from './auth.service';
 
 @Controller()
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService) { }
 
   @GrpcMethod('AuthService', 'Login')
   login(request: LoginRequest): Promise<LoginResponse> {
@@ -33,5 +37,12 @@ export class AuthController {
   @GrpcMethod('AuthService', 'ValidateOAuth')
   validateOAuth(request: ValidateOAuthRequest): Promise<LoginResponse> {
     return this.authService.validateOAuth(request);
+  }
+
+  @GrpcMethod('AuthService', 'ResetPassword')
+  resetPassword(
+    request: ResetPasswordRequest,
+  ): Promise<ResetPasswordResponse> {
+    return this.authService.resetPassword(request);
   }
 }

@@ -6,6 +6,8 @@ service AuthService {
   rpc Login(LoginRequest) returns (LoginResponse) {}
   rpc RefreshToken(RefreshTokenRequest) returns (RefreshTokenResponse) {}
   rpc Register(RegisterRequest) returns (RegisterResponse) {}
+  // rpc ValidateGoogle(ValidateGoogleRequest) returns (ValidateGoogleResponse) {}
+  rpc ResetPassword(ResetPasswordRequest) returns (ResetPasswordResponse) {}
   rpc ValidateOAuth(ValidateOAuthRequest) returns (LoginResponse) {}
   rpc Logout(LogoutRequest) returns (LogoutResponse) {}
 }
@@ -67,6 +69,14 @@ message LogoutRequest {
   Credential credential = 1;
 }
 
+message ResetPasswordRequest {
+  string access_token = 1;
+  string password = 2;
+}
+
+message ResetPasswordResponse {
+  bool is_done = 1;
+}
 message LogoutResponse {
   bool is_done = 1;
 }

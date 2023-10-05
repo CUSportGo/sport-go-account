@@ -310,9 +310,15 @@ export class AuthService implements AuthServiceController {
       };
       await transporter.sendMail(mailOptions);
       return { resetPasswordUrl: linkToResetPassword }
-    } catch (e) {
-      console.log(e);
-      throw e;
+    } catch (err: any) {
+      console.log(err);
+      if (!(err instanceof RpcException)) {
+        throw new RpcException({
+          code: status.INTERNAL,
+          message: 'internal server error',
+        });
+      }
+      throw err;
     }
   }
 }

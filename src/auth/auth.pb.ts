@@ -27,7 +27,7 @@ export interface Credential {
   refreshTokenExpiresIn: number;
 }
 
-export interface GoogleUser {
+export interface OAuthUser {
   id: string;
   firstName: string;
   lastName: string;
@@ -50,6 +50,11 @@ export interface RefreshTokenRequest {
 
 export interface RefreshTokenResponse {
   credential: Credential | undefined;
+}
+
+export interface ValidateOAuthRequest {
+  user: OAuthUser | undefined;
+  type: string;
 }
 
 export interface LogoutRequest {
@@ -85,11 +90,12 @@ export interface AuthServiceClient {
 
   register(request: RegisterRequest): Observable<RegisterResponse>;
 
-  logout(request: LogoutRequest): Observable<LogoutResponse>;
+  validateOAuth(request: ValidateOAuthRequest): Observable<LoginResponse>;
 
   validateGoogle(request: ValidateGoogleRequest): Observable<ValidateGoogleResponse>;
 
   forgotPassword(request: ForgotPasswordRequest): Observable<ForgotPasswordResponse>;
+  logout(request: LogoutRequest): Observable<LogoutResponse>;
 }
 
 export interface AuthServiceController {
@@ -101,7 +107,7 @@ export interface AuthServiceController {
 
   register(request: RegisterRequest): Promise<RegisterResponse> | Observable<RegisterResponse> | RegisterResponse;
 
-  logout(request: LogoutRequest): Promise<LogoutResponse> | Observable<LogoutResponse> | LogoutResponse;
+  validateOAuth(request: ValidateOAuthRequest): Promise<LoginResponse> | Observable<LoginResponse> | LoginResponse;
 
   validateGoogle(
     request: ValidateGoogleRequest,
@@ -110,11 +116,12 @@ export interface AuthServiceController {
   forgotPassword(
     request: ForgotPasswordRequest,
   ): Promise<ForgotPasswordResponse> | Observable<ForgotPasswordResponse> | ForgotPasswordResponse;
+  logout(request: LogoutRequest): Promise<LogoutResponse> | Observable<LogoutResponse> | LogoutResponse;
 }
 
 export function AuthServiceControllerMethods() {
   return function (constructor: Function) {
-    const grpcMethods: string[] = ["login", "refreshToken", "register", "logout", "validateGoogle", "forgotPassword"];
+    const grpcMethods: string[] = ["login", "refreshToken", "register", "validateOAuth", "logout", "forgotPassword"];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
       GrpcMethod("AuthService", method)(constructor.prototype[method], method, descriptor);

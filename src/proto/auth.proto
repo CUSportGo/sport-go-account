@@ -6,6 +6,7 @@ service AuthService {
   rpc Login(LoginRequest) returns (LoginResponse) {}
   rpc RefreshToken(RefreshTokenRequest) returns (RefreshTokenResponse) {}
   rpc Register(RegisterRequest) returns (RegisterResponse) {}
+  rpc ValidateOAuth(ValidateOAuthRequest) returns (LoginResponse) {}
   rpc Logout(LogoutRequest) returns (LogoutResponse) {}
   rpc ValidateGoogle(ValidateGoogleRequest) returns (ValidateGoogleResponse) {}
   rpc ForgotPassword(ForgotPasswordRequest) returns (ForgotPasswordResponse) {}
@@ -34,7 +35,7 @@ message Credential {
   int32 refresh_token_expires_in = 4;
 }
 
-message GoogleUser {
+message OAuthUser {
   string id = 1;
   string firstName = 2;
   string lastName = 3;
@@ -57,6 +58,11 @@ message RefreshTokenRequest {
 
 message RefreshTokenResponse {
   Credential credential = 1;
+}
+
+message ValidateOAuthRequest {
+  OAuthUser user = 1;
+  string type = 2;
 }
 
 message LogoutRequest {

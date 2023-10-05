@@ -67,7 +67,7 @@ message ValidateGoogleResponse {
 }
 
 message ResetPasswordRequest {
-  string email = 1;
+  string access_token = 1;
   string password = 2;
 }
 

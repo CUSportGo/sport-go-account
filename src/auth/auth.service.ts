@@ -22,6 +22,7 @@ import { status } from '@grpc/grpc-js';
 import { $Enums, Prisma } from '@prisma/client';
 import { v4 as uuidv4 } from 'uuid';
 import { Role } from '@prisma/client';
+import { JwtPayload } from './strategies/accessToken.strategy';
 
 @Injectable()
 export class AuthService implements AuthServiceController {
@@ -216,19 +217,21 @@ export class AuthService implements AuthServiceController {
 
   async resetPassword(request: ResetPasswordRequest): Promise<ResetPasswordResponse> {
     try {
-      const user = await this.userRepo.getUserByEmail(request.email)
-      const hashedPassword = await bcrypt.hash(request.password, 12);
+      const credential = this.jwtService.decode(request.accessToken) as JwtPayload;
+      const user = await this.userRepo.findUserById(credential.sub);
+
       const isPasswordMatch = await bcrypt.compare(
         request.password,
         user.password,
       );
       if (isPasswordMatch) {
         throw new RpcException({
-          code: status.FAILED_PRECONDITION,
+          code: status.INVALID_ARGUMENT,
           message: 'New password should not be the same as the old one.',
         });
       }
 
+      const hashedPassword = await bcrypt.hash(request.password, 12);
       await this.userRepo.update(user.id, {
         password: hashedPassword,
       })

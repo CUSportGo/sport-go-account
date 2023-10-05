@@ -8,7 +8,7 @@ type RegisteredClaims = {
   issuedAt: Date;
 };
 
-type JwtPayload = {
+export type JwtPayload = {
   sub: string;
   registeredClaims: RegisteredClaims;
 };

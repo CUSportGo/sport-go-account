@@ -24,6 +24,7 @@ model User {
   refreshToken String?
   status       Status   @default(ACTIVE)
   googleID     String?  @unique
+  facebookID   String?  @unique
 }
 
 enum Role {
@@ -34,4 +35,8 @@ enum Role {
 enum Status {
   ACTIVE
   BANNED
+}
+
+model Blacklist {
+  outDatedAccessToken String @unique
 }

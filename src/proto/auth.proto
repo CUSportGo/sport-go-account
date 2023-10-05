@@ -8,6 +8,8 @@ service AuthService {
   rpc Register(RegisterRequest) returns (RegisterResponse) {}
   rpc ValidateGoogle(ValidateGoogleRequest) returns (ValidateGoogleResponse) {}
   rpc ResetPassword(ResetPasswordRequest) returns (ResetPasswordResponse) {}
+  rpc ValidateOAuth(ValidateOAuthRequest) returns (LoginResponse) {}
+  rpc Logout(LogoutRequest) returns (LogoutResponse) {}
 }
 
 message RegisterRequest {
@@ -33,7 +35,7 @@ message Credential {
   int32 refresh_token_expires_in = 4;
 }
 
-message GoogleUser {
+message OAuthUser {
   string id = 1;
   string firstName = 2;
   string lastName = 3;
@@ -58,11 +60,12 @@ message RefreshTokenResponse {
   Credential credential = 1;
 }
 
-message ValidateGoogleRequest {
-  GoogleUser user = 1;
+message ValidateOAuthRequest {
+  OAuthUser user = 1;
+  string type = 2;
 }
 
-message ValidateGoogleResponse {
+message LogoutRequest {
   Credential credential = 1;
 }
 
@@ -72,5 +75,8 @@ message ResetPasswordRequest {
 }
 
 message ResetPasswordResponse {
+  bool is_done = 1;
+}
+message LogoutResponse {
   bool is_done = 1;
 }

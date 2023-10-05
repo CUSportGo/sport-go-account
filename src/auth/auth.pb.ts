@@ -27,7 +27,7 @@ export interface Credential {
   refreshTokenExpiresIn: number;
 }
 
-export interface GoogleUser {
+export interface OAuthUser {
   id: string;
   firstName: string;
   lastName: string;
@@ -52,13 +52,15 @@ export interface RefreshTokenResponse {
   credential: Credential | undefined;
 }
 
-export interface ValidateGoogleRequest {
-  user: GoogleUser | undefined;
+export interface ValidateOAuthRequest {
+  user: OAuthUser | undefined;
+  type: string;
 }
 
-export interface ValidateGoogleResponse {
+export interface LogoutRequest {
   credential: Credential | undefined;
 }
+
 
 export interface ResetPasswordRequest {
   accessToken: string;
@@ -66,6 +68,9 @@ export interface ResetPasswordRequest {
 }
 
 export interface ResetPasswordResponse {
+}
+export interface LogoutResponse {
+
   isDone: boolean;
 }
 
@@ -81,6 +86,11 @@ export interface AuthServiceClient {
   validateGoogle(request: ValidateGoogleRequest): Observable<ValidateGoogleResponse>;
 
   resetPassword(request: ResetPasswordRequest): Observable<ResetPasswordResponse>;
+
+  validateOAuth(request: ValidateOAuthRequest): Observable<LoginResponse>;
+
+  logout(request: LogoutRequest): Observable<LogoutResponse>;
+
 }
 
 export interface AuthServiceController {
@@ -92,6 +102,7 @@ export interface AuthServiceController {
 
   register(request: RegisterRequest): Promise<RegisterResponse> | Observable<RegisterResponse> | RegisterResponse;
 
+
   validateGoogle(
     request: ValidateGoogleRequest,
   ): Promise<ValidateGoogleResponse> | Observable<ValidateGoogleResponse> | ValidateGoogleResponse;
@@ -99,11 +110,18 @@ export interface AuthServiceController {
   resetPassword(
     request: ResetPasswordRequest,
   ): Promise<ResetPasswordResponse> | Observable<ResetPasswordResponse> | ResetPasswordResponse;
+
+  validateOAuth(request: ValidateOAuthRequest): Promise<LoginResponse> | Observable<LoginResponse> | LoginResponse;
+
+  logout(request: LogoutRequest): Promise<LogoutResponse> | Observable<LogoutResponse> | LogoutResponse;
+
 }
 
 export function AuthServiceControllerMethods() {
   return function (constructor: Function) {
-    const grpcMethods: string[] = ["login", "refreshToken", "register", "validateGoogle", "resetPassword"];
+
+    const grpcMethods: string[] = ["login", "refreshToken", "register", "validateGoogle", "resetPassword", "logout"];
+
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
       GrpcMethod("AuthService", method)(constructor.prototype[method], method, descriptor);

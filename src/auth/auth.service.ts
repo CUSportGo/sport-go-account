@@ -8,6 +8,8 @@ import {
   Credential,
   LoginRequest,
   LoginResponse,
+  LogoutRequest,
+  LogoutResponse,
   RefreshTokenRequest,
   RefreshTokenResponse,
   RegisterRequest,
@@ -16,18 +18,21 @@ import {
   ResetPasswordResponse,
   ValidateGoogleRequest,
   ValidateGoogleResponse,
+  ValidateOAuthRequest
 } from './auth.pb';
 import { RpcException } from '@nestjs/microservices';
 import { status } from '@grpc/grpc-js';
 import { $Enums, Prisma } from '@prisma/client';
 import { v4 as uuidv4 } from 'uuid';
 import { Role } from '@prisma/client';
+import { BlacklistRepository } from '../repository/blacklist.repository';
 import { JwtPayload } from './strategies/accessToken.strategy';
 
 @Injectable()
 export class AuthService implements AuthServiceController {
   constructor(
     private userRepo: UserRepository,
+    private blacklistRepo: BlacklistRepository,
     private jwtService: JwtService,
     private configService: ConfigService,
   ) { }
@@ -89,9 +94,9 @@ export class AuthService implements AuthServiceController {
     return null;
   }
 
-  public async validateGoogle(
-    request: ValidateGoogleRequest,
-  ): Promise<ValidateGoogleResponse> {
+  public async validateOAuth(
+    request: ValidateOAuthRequest,
+  ): Promise<LoginResponse> {
     try {
       let user = await this.userRepo.getUserByEmail(request.user.email);
       if (!user) {
@@ -103,11 +108,35 @@ export class AuthService implements AuthServiceController {
           email: request.user.email,
           photoURL: request.user.photoURL,
           role: $Enums.Role.USER,
-          googleID: request.user.id,
         };
+        if (request.type == 'google') {
+          createUser.googleID = request.user.id;
+        } else {
+          createUser.facebookID = request.user.id;
+        }
         user = await this.userRepo.create(createUser);
       } else {
-        if (!user.googleID) {
+        if (!user.googleID && !user.facebookID) {
+          throw new RpcException({
+            code: status.PERMISSION_DENIED,
+            message: 'This email is already taken',
+          });
+        }
+
+        if (
+          request.type == 'google' &&
+          (user.googleID != request.user.id || user.facebookID)
+        ) {
+          throw new RpcException({
+            code: status.PERMISSION_DENIED,
+            message: 'This email is already taken',
+          });
+        }
+
+        if (
+          request.type == 'facebook' &&
+          (user.facebookID != request.user.id || user.googleID)
+        ) {
           throw new RpcException({
             code: status.PERMISSION_DENIED,
             message: 'This email is already taken',
@@ -214,7 +243,6 @@ export class AuthService implements AuthServiceController {
     }
   }
 
-
   async resetPassword(request: ResetPasswordRequest): Promise<ResetPasswordResponse> {
     try {
       const credential = this.jwtService.decode(request.accessToken) as JwtPayload;
@@ -247,5 +275,33 @@ export class AuthService implements AuthServiceController {
       }
       throw err;
     }
+  public async logout(request: LogoutRequest): Promise<LogoutResponse> {
+    try {
+      await this.blacklistRepo.addOutdatedToken({
+        outDatedAccessToken: request.credential.accessToken,
+      });
+
+      let credential = this.jwtService.decode(
+        request.credential.refreshToken,
+      ) as JwtPayload;
+      let userId = credential.sub;
+
+      await this.userRepo.update(userId, {
+        refreshToken: null,
+      });
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        console.log(
+          'There is a unique constraint violation, a blacklist should not outdated twice!',
+        );
+      }
+      throw new RpcException({
+        code: status.INTERNAL,
+        message: e.message,
+      });
+    }
+
+    const response: LogoutResponse = { isDone: true };
+    return response;
   }
 }

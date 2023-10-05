@@ -16,8 +16,8 @@ import {
   RegisterResponse,
   ResetPasswordRequest,
   ResetPasswordResponse,
-  ValidateGoogleRequest,
-  ValidateGoogleResponse,
+  // ValidateGoogleRequest,
+  // ValidateGoogleResponse,
   ValidateOAuthRequest
 } from './auth.pb';
 import { RpcException } from '@nestjs/microservices';
@@ -275,6 +275,7 @@ export class AuthService implements AuthServiceController {
       }
       throw err;
     }
+  }
   public async logout(request: LogoutRequest): Promise<LogoutResponse> {
     try {
       await this.blacklistRepo.addOutdatedToken({

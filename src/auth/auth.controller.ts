@@ -9,15 +9,15 @@ import {
   RegisterResponse,
   ResetPasswordRequest,
   ResetPasswordResponse,
-  ValidateGoogleRequest,
-  ValidateGoogleResponse,
+  // ValidateGoogleRequest,
+  // ValidateGoogleResponse,
   ValidateOAuthRequest
 } from './auth.pb';
 import { AuthService } from './auth.service';
 
 @Controller()
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService) { }
 
   @GrpcMethod('AuthService', 'Login')
   login(request: LoginRequest): Promise<LoginResponse> {

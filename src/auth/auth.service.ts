@@ -16,7 +16,11 @@ import {
   RefreshTokenResponse,
   RegisterRequest,
   RegisterResponse,
-  ValidateOAuthRequest,
+  ResetPasswordRequest,
+  ResetPasswordResponse,
+  // ValidateGoogleRequest,
+  // ValidateGoogleResponse,
+  ValidateOAuthRequest
 } from './auth.pb';
 import { RpcException } from '@nestjs/microservices';
 import { status } from '@grpc/grpc-js';
@@ -243,6 +247,39 @@ export class AuthService implements AuthServiceController {
     }
   }
 
+  async resetPassword(request: ResetPasswordRequest): Promise<ResetPasswordResponse> {
+    try {
+      const credential = this.jwtService.decode(request.accessToken) as JwtPayload;
+      const user = await this.userRepo.findUserById(credential.sub);
+
+      const isPasswordMatch = await bcrypt.compare(
+        request.password,
+        user.password,
+      );
+      if (isPasswordMatch) {
+        throw new RpcException({
+          code: status.INVALID_ARGUMENT,
+          message: 'New password should not be the same as the old one.',
+        });
+      }
+
+      const hashedPassword = await bcrypt.hash(request.password, 12);
+      await this.userRepo.update(user.id, {
+        password: hashedPassword,
+      })
+
+      return { isDone: true }
+    } catch (err: any) {
+      console.log(err);
+      if (!(err instanceof RpcException)) {
+        throw new RpcException({
+          code: status.INTERNAL,
+          message: 'internal server error',
+        });
+      }
+      throw err;
+    }
+  }
   public async logout(request: LogoutRequest): Promise<LogoutResponse> {
     try {
       await this.blacklistRepo.addOutdatedToken({

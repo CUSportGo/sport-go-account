@@ -9,7 +9,11 @@ import {
   LogoutResponse,
   RegisterRequest,
   RegisterResponse,
-  ValidateOAuthRequest,
+  ResetPasswordRequest,
+  ResetPasswordResponse,
+  // ValidateGoogleRequest,
+  // ValidateGoogleResponse,
+  ValidateOAuthRequest
 } from './auth.pb';
 import { AuthService } from './auth.service';
 
@@ -37,9 +41,17 @@ export class AuthController {
     return this.authService.validateOAuth(request);
   }
 
+
   @GrpcMethod('AuthService', 'ForgotPassword')
   forgotPassword(
     request: ForgotPasswordRequest): Promise<ForgotPasswordResponse> {
     return this.authService.forgotPassword(request)
+
+  @GrpcMethod('AuthService', 'ResetPassword')
+  resetPassword(
+    request: ResetPasswordRequest,
+  ): Promise<ResetPasswordResponse> {
+    return this.authService.resetPassword(request);
+
   }
 }

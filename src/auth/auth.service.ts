@@ -217,7 +217,17 @@ export class AuthService implements AuthServiceController {
   async resetPassword(request: ResetPasswordRequest): Promise<ResetPasswordResponse> {
     try {
       const user = await this.userRepo.getUserByEmail(request.email)
-      const hashedPassword = await bcrypt.hash(request.newPassword, 12);
+      const hashedPassword = await bcrypt.hash(request.password, 12);
+      const isPasswordMatch = await bcrypt.compare(
+        request.password,
+        user.password,
+      );
+      if (isPasswordMatch) {
+        throw new RpcException({
+          code: status.FAILED_PRECONDITION,
+          message: 'New password should not be the same as the old one.',
+        });
+      }
 
       await this.userRepo.update(user.id, {
         password: hashedPassword,
@@ -226,10 +236,13 @@ export class AuthService implements AuthServiceController {
       return { isDone: true }
     } catch (err: any) {
       console.log(err);
-      throw new RpcException({
-        code: status.INTERNAL,
-        message: 'internal server error',
-      });
+      if (!(err instanceof RpcException)) {
+        throw new RpcException({
+          code: status.INTERNAL,
+          message: 'internal server error',
+        });
+      }
+      throw err;
     }
   }
 }

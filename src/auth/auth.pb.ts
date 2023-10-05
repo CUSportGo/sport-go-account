@@ -62,7 +62,7 @@ export interface ValidateGoogleResponse {
 
 export interface ResetPasswordRequest {
   email: string;
-  newPassword: string;
+  password: string;
 }
 
 export interface ResetPasswordResponse {

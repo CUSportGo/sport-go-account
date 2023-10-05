@@ -73,7 +73,7 @@ export interface ForgotPasswordRequest {
 }
 
 export interface ForgotPasswordResponse {
-  forgotPasswordUrl: string;
+  resetPasswordUrl: string;
 }
 
 export const AUTH_PACKAGE_NAME = "auth";

@@ -79,5 +79,5 @@ message ForgotPasswordRequest {
 }
 
 message ForgotPasswordResponse {
-  string forgot_password_url = 1;
+  string reset_password_url = 1;
 }

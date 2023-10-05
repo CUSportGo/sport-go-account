@@ -6,6 +6,8 @@ import { ConfigService } from '@nestjs/config';
 import {
   AuthServiceController,
   Credential,
+  ForgotPasswordRequest,
+  ForgotPasswordResponse,
   LoginRequest,
   LoginResponse,
   LogoutRequest,
@@ -24,6 +26,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { Role } from '@prisma/client';
 import { BlacklistRepository } from '../repository/blacklist.repository';
 import { JwtPayload } from './strategies/accessToken.strategy';
+import * as nodemailer from 'nodemailer';
+
 
 @Injectable()
 export class AuthService implements AuthServiceController {
@@ -256,9 +260,9 @@ export class AuthService implements AuthServiceController {
   }
 
 
-  async forgotPassword(email: string) {
+  async forgotPassword(request: ForgotPasswordRequest): Promise<ForgotPasswordResponse> {
     try {
-      const user = await this.userRepo.getUserByEmail(email);
+      const user = await this.userRepo.getUserByEmail(request.email);
       if (!user) {
         throw new RpcException({
           code: status.NOT_FOUND,
@@ -267,7 +271,31 @@ export class AuthService implements AuthServiceController {
       }
       // gen token
       const userToken = (await this.getTokens(user.id)).accessToken;
-      return { resetPasswordUrl: "http://localhost:3000/reset-password/" + userToken }
+      const linkToResetPassword = "http://localhost:3000/reset-password/" + userToken;
+
+      //set connection
+      const transporter = nodemailer.createTransport({
+        host: 'smtp.office365.com',
+        port: 587,
+        secure: false, // Set to true if using SSL
+        auth: {
+          user: process.env.EMAIL_USERNAME,
+          pass: process.env.EMAIL_PASSWORD,
+        },
+      });
+
+      // Define email options
+      const mailOptions = {
+        from: process.env.EMAIL_USERNAME,
+        to: request.email,
+        subject: 'Password Reset',
+        html: `
+          <p>You have requested a password reset. Click the link below to reset your password:</p>
+          <a href="${linkToResetPassword}">Reset Password</a>
+        `,
+      };
+      await transporter.sendMail(mailOptions);
+      return { resetPasswordUrl: linkToResetPassword }
     } catch (e) {
       console.log(e);
       throw e;

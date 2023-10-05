@@ -41,7 +41,7 @@ export class AuthController {
   }
 
   @GrpcMethod('AuthService', 'ForgotPassword')
-  ForgotPassword(
+  forgotPassword(
     request: ForgotPasswordRequest): Promise<ForgotPasswordResponse> {
     return this.authService.forgotPassword(request)
   }

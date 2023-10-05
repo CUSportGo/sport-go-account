@@ -65,14 +65,6 @@ export interface LogoutResponse {
   isDone: boolean;
 }
 
-export interface ValidateGoogleRequest {
-  user: GoogleUser | undefined;
-}
-
-export interface ValidateGoogleResponse {
-  credential: Credential | undefined;
-}
-
 export interface ForgotPasswordRequest {
   email: string;
 }
@@ -92,10 +84,9 @@ export interface AuthServiceClient {
 
   validateOAuth(request: ValidateOAuthRequest): Observable<LoginResponse>;
 
-  validateGoogle(request: ValidateGoogleRequest): Observable<ValidateGoogleResponse>;
+  logout(request: LogoutRequest): Observable<LogoutResponse>;
 
   forgotPassword(request: ForgotPasswordRequest): Observable<ForgotPasswordResponse>;
-  logout(request: LogoutRequest): Observable<LogoutResponse>;
 }
 
 export interface AuthServiceController {
@@ -109,14 +100,11 @@ export interface AuthServiceController {
 
   validateOAuth(request: ValidateOAuthRequest): Promise<LoginResponse> | Observable<LoginResponse> | LoginResponse;
 
-  validateGoogle(
-    request: ValidateGoogleRequest,
-  ): Promise<ValidateGoogleResponse> | Observable<ValidateGoogleResponse> | ValidateGoogleResponse;
+  logout(request: LogoutRequest): Promise<LogoutResponse> | Observable<LogoutResponse> | LogoutResponse;
 
   forgotPassword(
     request: ForgotPasswordRequest,
   ): Promise<ForgotPasswordResponse> | Observable<ForgotPasswordResponse> | ForgotPasswordResponse;
-  logout(request: LogoutRequest): Promise<LogoutResponse> | Observable<LogoutResponse> | LogoutResponse;
 }
 
 export function AuthServiceControllerMethods() {

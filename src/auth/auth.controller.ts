@@ -1,14 +1,15 @@
 import { Controller } from '@nestjs/common';
 import { GrpcMethod } from '@nestjs/microservices';
 import {
+  ForgotPasswordRequest,
+  ForgotPasswordResponse,
   LoginRequest,
   LoginResponse,
   LogoutRequest,
   LogoutResponse,
   RegisterRequest,
   RegisterResponse,
-  ValidateGoogleRequest,
-  ValidateGoogleResponse,
+  ValidateOAuthRequest,
 } from './auth.pb';
 import { AuthService } from './auth.service';
 

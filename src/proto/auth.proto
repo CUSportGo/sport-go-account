@@ -8,7 +8,6 @@ service AuthService {
   rpc Register(RegisterRequest) returns (RegisterResponse) {}
   rpc ValidateOAuth(ValidateOAuthRequest) returns (LoginResponse) {}
   rpc Logout(LogoutRequest) returns (LogoutResponse) {}
-  rpc ValidateGoogle(ValidateGoogleRequest) returns (ValidateGoogleResponse) {}
   rpc ForgotPassword(ForgotPasswordRequest) returns (ForgotPasswordResponse) {}
 }
 
@@ -71,13 +70,6 @@ message LogoutRequest {
 
 message LogoutResponse {
   bool is_done = 1;
-}
-message ValidateGoogleRequest {
-  GoogleUser user = 1;
-}
-
-message ValidateGoogleResponse {
-  Credential credential = 1;
 }
 
 message ForgotPasswordRequest {

@@ -7,6 +7,8 @@ import {
   RegisterResponse,
   ValidateGoogleRequest,
   ValidateGoogleResponse,
+  ValidateTokenRequest,
+  ValidateTokenResponse,
 } from './auth.pb';
 import { AuthService } from './auth.service';
 
@@ -39,7 +41,7 @@ export class AuthController {
   }
 
   @GrpcMethod('AuthService', 'ValidateToken')
-  validateToken(token: string): Promise<boolean> {
-    return this.authService.validateToken(token);
+  validateToken(request: ValidateTokenRequest): Promise<ValidateTokenResponse> {
+    return this.authService.validateToken(request);
   }
 }

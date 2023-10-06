@@ -8,6 +8,7 @@ service AuthService {
   rpc Register(RegisterRequest) returns (RegisterResponse) {}
   rpc Logout(LogoutRequest) returns (LogoutResponse) {}
   rpc ValidateGoogle(ValidateGoogleRequest) returns (ValidateGoogleResponse) {}
+  rpc ValidateToken(ValidateTokenRequest) returns (ValidateTokenResponse) {}
 }
 
 message RegisterRequest {
@@ -71,4 +72,12 @@ message ValidateGoogleRequest {
 
 message ValidateGoogleResponse {
   Credential credential = 1;
+}
+
+message ValidateTokenRequest {
+  string token = 1;
+}
+
+message ValidateTokenResponse {
+  bool is_valid = 1;
 }

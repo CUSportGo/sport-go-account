@@ -68,6 +68,14 @@ export interface ValidateGoogleResponse {
   credential: Credential | undefined;
 }
 
+export interface ValidateTokenRequest {
+  token: string;
+}
+
+export interface ValidateTokenResponse {
+  isValid: boolean;
+}
+
 export const AUTH_PACKAGE_NAME = "auth";
 
 export interface AuthServiceClient {
@@ -80,6 +88,8 @@ export interface AuthServiceClient {
   logout(request: LogoutRequest): Observable<LogoutResponse>;
 
   validateGoogle(request: ValidateGoogleRequest): Observable<ValidateGoogleResponse>;
+
+  validateToken(request: ValidateTokenRequest): Observable<ValidateTokenResponse>;
 }
 
 export interface AuthServiceController {
@@ -96,11 +106,15 @@ export interface AuthServiceController {
   validateGoogle(
     request: ValidateGoogleRequest,
   ): Promise<ValidateGoogleResponse> | Observable<ValidateGoogleResponse> | ValidateGoogleResponse;
+
+  validateToken(
+    request: ValidateTokenRequest,
+  ): Promise<ValidateTokenResponse> | Observable<ValidateTokenResponse> | ValidateTokenResponse;
 }
 
 export function AuthServiceControllerMethods() {
   return function (constructor: Function) {
-    const grpcMethods: string[] = ["login", "refreshToken", "register", "logout", "validateGoogle"];
+    const grpcMethods: string[] = ["login", "refreshToken", "register", "logout", "validateGoogle", "validateToken"];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
       GrpcMethod("AuthService", method)(constructor.prototype[method], method, descriptor);

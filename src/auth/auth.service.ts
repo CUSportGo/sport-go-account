@@ -16,6 +16,8 @@ import {
   RegisterResponse,
   ValidateGoogleRequest,
   ValidateGoogleResponse,
+  ValidateTokenRequest,
+  ValidateTokenResponse,
 } from './auth.pb';
 import { RpcException } from '@nestjs/microservices';
 import { status } from '@grpc/grpc-js';
@@ -147,21 +149,28 @@ export class AuthService implements AuthServiceController {
     }
   }
 
-  public async validateToken(token: string): Promise<boolean> {
+  public async validateToken(
+    request: ValidateTokenRequest,
+  ): Promise<ValidateTokenResponse> {
     try {
-      const decodedToken = this.jwtService.verify(token, {
+      const decodedToken = this.jwtService.verify(request.token, {
         secret: this.configService.get<string>('JWT_ACCESS_SECRET'),
       });
+      if (!decodedToken) {
+        return { isValid: false };
+      }
       if (
         decodedToken.registeredClaims.issuer !==
         this.configService.get<string>('TOKEN_ISSUER')
       ) {
-        return false;
+        return { isValid: false };
       }
+
       if (decodedToken.registeredClaims.expiredAt < Date.now()) {
-        return false;
+        return { isValid: false };
       }
-      return true;
+
+      return { isValid: true };
     } catch (err) {
       console.log(err);
       if (!(err instanceof RpcException)) {
@@ -181,7 +190,7 @@ export class AuthService implements AuthServiceController {
           sub: userId,
           registeredClaims: {
             issuer: this.configService.get<string>('TOKEN_ISSUER'),
-            expiredAt: Date.now() + 60 * 15,
+            expiredAt: Date.now() + 60 * 15 * 1000,
             issuedAt: Date.now(),
           },
         },
@@ -196,7 +205,7 @@ export class AuthService implements AuthServiceController {
           sub: userId,
           registeredClaims: {
             issuer: '',
-            expiredAt: Date.now() + 60 * 60 * 24 * 7,
+            expiredAt: Date.now() + 60 * 60 * 24 * 7 * 1000,
             issuedAt: Date.now(),
           },
         },

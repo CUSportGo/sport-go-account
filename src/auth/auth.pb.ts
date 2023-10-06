@@ -91,6 +91,8 @@ export interface AuthServiceClient {
 
   register(request: RegisterRequest): Observable<RegisterResponse>;
 
+  /** rpc ValidateGoogle(ValidateGoogleRequest) returns (ValidateGoogleResponse) {} */
+
   resetPassword(request: ResetPasswordRequest): Observable<ResetPasswordResponse>;
 
   validateOAuth(request: ValidateOAuthRequest): Observable<LoginResponse>;
@@ -109,6 +111,8 @@ export interface AuthServiceController {
 
   register(request: RegisterRequest): Promise<RegisterResponse> | Observable<RegisterResponse> | RegisterResponse;
 
+  /** rpc ValidateGoogle(ValidateGoogleRequest) returns (ValidateGoogleResponse) {} */
+
   resetPassword(
     request: ResetPasswordRequest,
   ): Promise<ResetPasswordResponse> | Observable<ResetPasswordResponse> | ResetPasswordResponse;
@@ -124,8 +128,15 @@ export interface AuthServiceController {
 
 export function AuthServiceControllerMethods() {
   return function (constructor: Function) {
-    const grpcMethods: string[] = ["login", "refreshToken", "register", "validateOAuth", "logout", "forgotPassword", "resetPassword"];
-
+    const grpcMethods: string[] = [
+      "login",
+      "refreshToken",
+      "register",
+      "resetPassword",
+      "validateOAuth",
+      "logout",
+      "forgotPassword",
+    ];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
       GrpcMethod("AuthService", method)(constructor.prototype[method], method, descriptor);

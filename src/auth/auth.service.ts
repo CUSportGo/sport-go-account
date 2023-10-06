@@ -6,6 +6,8 @@ import { ConfigService } from '@nestjs/config';
 import {
   AuthServiceController,
   Credential,
+  ForgotPasswordRequest,
+  ForgotPasswordResponse,
   LoginRequest,
   LoginResponse,
   LogoutRequest,
@@ -14,10 +16,13 @@ import {
   RefreshTokenResponse,
   RegisterRequest,
   RegisterResponse,
-  ValidateGoogleRequest,
-  ValidateGoogleResponse,
   ValidateTokenRequest,
   ValidateTokenResponse,
+  ResetPasswordRequest,
+  ResetPasswordResponse,
+  // ValidateGoogleRequest,
+  // ValidateGoogleResponse,
+  ValidateOAuthRequest
 } from './auth.pb';
 import { RpcException } from '@nestjs/microservices';
 import { status } from '@grpc/grpc-js';
@@ -26,6 +31,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { Role } from '@prisma/client';
 import { BlacklistRepository } from '../repository/blacklist.repository';
 import { JwtPayload } from './strategies/accessToken.strategy';
+import * as nodemailer from 'nodemailer';
+
 
 @Injectable()
 export class AuthService implements AuthServiceController {
@@ -93,9 +100,9 @@ export class AuthService implements AuthServiceController {
     return null;
   }
 
-  public async validateGoogle(
-    request: ValidateGoogleRequest,
-  ): Promise<ValidateGoogleResponse> {
+  public async validateOAuth(
+    request: ValidateOAuthRequest,
+  ): Promise<LoginResponse> {
     try {
       let user = await this.userRepo.getUserByEmail(request.user.email);
       if (!user) {
@@ -107,11 +114,35 @@ export class AuthService implements AuthServiceController {
           email: request.user.email,
           photoURL: request.user.photoURL,
           role: $Enums.Role.USER,
-          googleID: request.user.id,
         };
+        if (request.type == 'google') {
+          createUser.googleID = request.user.id;
+        } else {
+          createUser.facebookID = request.user.id;
+        }
         user = await this.userRepo.create(createUser);
       } else {
-        if (!user.googleID) {
+        if (!user.googleID && !user.facebookID) {
+          throw new RpcException({
+            code: status.PERMISSION_DENIED,
+            message: 'This email is already taken',
+          });
+        }
+
+        if (
+          request.type == 'google' &&
+          (user.googleID != request.user.id || user.facebookID)
+        ) {
+          throw new RpcException({
+            code: status.PERMISSION_DENIED,
+            message: 'This email is already taken',
+          });
+        }
+
+        if (
+          request.type == 'facebook' &&
+          (user.facebookID != request.user.id || user.googleID)
+        ) {
           throw new RpcException({
             code: status.PERMISSION_DENIED,
             message: 'This email is already taken',
@@ -252,6 +283,39 @@ export class AuthService implements AuthServiceController {
     }
   }
 
+  async resetPassword(request: ResetPasswordRequest): Promise<ResetPasswordResponse> {
+    try {
+      const credential = this.jwtService.decode(request.accessToken) as JwtPayload;
+      const user = await this.userRepo.findUserById(credential.sub);
+
+      const isPasswordMatch = await bcrypt.compare(
+        request.password,
+        user.password,
+      );
+      if (isPasswordMatch) {
+        throw new RpcException({
+          code: status.INVALID_ARGUMENT,
+          message: 'New password should not be the same as the old one.',
+        });
+      }
+
+      const hashedPassword = await bcrypt.hash(request.password, 12);
+      await this.userRepo.update(user.id, {
+        password: hashedPassword,
+      })
+
+      return { isDone: true }
+    } catch (err: any) {
+      console.log(err);
+      if (!(err instanceof RpcException)) {
+        throw new RpcException({
+          code: status.INTERNAL,
+          message: 'internal server error',
+        });
+      }
+      throw err;
+    }
+  }
   public async logout(request: LogoutRequest): Promise<LogoutResponse> {
     try {
       await this.blacklistRepo.addOutdatedToken({
@@ -280,5 +344,54 @@ export class AuthService implements AuthServiceController {
 
     const response: LogoutResponse = { isDone: true };
     return response;
+  }
+
+
+  async forgotPassword(request: ForgotPasswordRequest): Promise<ForgotPasswordResponse> {
+    try {
+      const user = await this.userRepo.getUserByEmail(request.email);
+      if (!user) {
+        throw new RpcException({
+          code: status.NOT_FOUND,
+          message: 'user not found',
+        });
+      }
+      // gen token
+      const userToken = (await this.getTokens(user.id)).accessToken;
+      const linkToResetPassword = "http://localhost:3000/reset-password/" + userToken;
+
+      //set connection
+      const transporter = nodemailer.createTransport({
+        host: 'smtp.office365.com',
+        port: 587,
+        secure: false, // Set to true if using SSL
+        auth: {
+          user: process.env.EMAIL_USERNAME,
+          pass: process.env.EMAIL_PASSWORD,
+        },
+      });
+
+      // Define email options
+      const mailOptions = {
+        from: process.env.EMAIL_USERNAME,
+        to: request.email,
+        subject: 'Password Reset',
+        html: `
+          <p>You have requested a password reset. Click the link below to reset your password:</p>
+          <a href="${linkToResetPassword}">Reset Password</a>
+        `,
+      };
+      await transporter.sendMail(mailOptions);
+      return { resetPasswordUrl: linkToResetPassword }
+    } catch (err: any) {
+      console.log(err);
+      if (!(err instanceof RpcException)) {
+        throw new RpcException({
+          code: status.INTERNAL,
+          message: 'internal server error',
+        });
+      }
+      throw err;
+    }
   }
 }

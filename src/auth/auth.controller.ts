@@ -1,14 +1,21 @@
 import { Controller } from '@nestjs/common';
 import { GrpcMethod } from '@nestjs/microservices';
 import {
+  ForgotPasswordRequest,
+  ForgotPasswordResponse,
   LoginRequest,
-  LoginResponse, LogoutRequest, LogoutResponse,
+  LoginResponse,
+  LogoutRequest,
+  LogoutResponse,
   RegisterRequest,
   RegisterResponse,
-  ValidateGoogleRequest,
-  ValidateGoogleResponse,
   ValidateTokenRequest,
   ValidateTokenResponse,
+  ResetPasswordRequest,
+  ResetPasswordResponse,
+  // ValidateGoogleRequest,
+  // ValidateGoogleResponse,
+  ValidateOAuthRequest
 } from './auth.pb';
 import { AuthService } from './auth.service';
 
@@ -26,18 +33,29 @@ export class AuthController {
     return this.authService.register(request);
   }
 
-
   @GrpcMethod('AuthService', 'Logout')
   logout(request: LogoutRequest): Promise<LogoutResponse> {
     return this.authService.logout(request);
   }
 
+  @GrpcMethod('AuthService', 'ValidateOAuth')
+  validateOAuth(request: ValidateOAuthRequest): Promise<LoginResponse> {
+    return this.authService.validateOAuth(request);
+  }
 
-  @GrpcMethod('AuthService', 'ValidateGoogle')
-  validateGoogle(
-    request: ValidateGoogleRequest,
-  ): Promise<ValidateGoogleResponse> {
-    return this.authService.validateGoogle(request);
+
+  @GrpcMethod('AuthService', 'ForgotPassword')
+  forgotPassword(
+    request: ForgotPasswordRequest): Promise<ForgotPasswordResponse> {
+    return this.authService.forgotPassword(request)
+  }
+
+  @GrpcMethod('AuthService', 'ResetPassword')
+  resetPassword(
+    request: ResetPasswordRequest,
+  ): Promise<ResetPasswordResponse> {
+    return this.authService.resetPassword(request);
+
   }
 
   @GrpcMethod('AuthService', 'ValidateToken')

@@ -5,9 +5,12 @@ import { AuthService } from './auth.service';
 describe('AuthController', () => {
   let controller: AuthController;
   const mockAuthService = {
-    Login: jest.fn(),
-    RefreshToken: jest.fn(),
+    login: jest.fn(),
+    refreshToken: jest.fn(),
     getTokens: jest.fn(),
+    resetPassword: jest.fn(),
+    register: jest.fn(),
+    validateGoogle: jest.fn(),
   };
 
   beforeEach(async () => {

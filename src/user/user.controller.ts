@@ -1,10 +1,10 @@
-import { Controller, Get, Param, Patch } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
 import { UserService } from './user.service';
 import { User } from 'src/model/user.dto';
 
 @Controller('user')
 export class UserController {
-  constructor(private userService: UserService) {}
+  constructor(private userService: UserService) { }
 
   @Get()
   findAllUsers() {

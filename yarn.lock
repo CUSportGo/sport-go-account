@@ -1112,6 +1112,13 @@
   resolved "https://registry.yarnpkg.com/@types/node/-/node-18.11.18.tgz#8dfb97f0da23c2293e554c5a50d61ef134d7697f"
   integrity sha512-DHQpWGjyQKSHj3ebjFI/wRKcqQcdR+MoFBygntYOZytCqNfkd2ZC4ARDJ2DQqhjH5p85Nnd3jhUJIXrszFX/JA==
 
+"@types/nodemailer@^6.4.11":
+  version "6.4.11"
+  resolved "https://registry.yarnpkg.com/@types/nodemailer/-/nodemailer-6.4.11.tgz#98630b15b95f292940d27cf4f314c42c70dfdf19"
+  integrity sha512-Ld2c0frwpGT4VseuoeboCXQ7UJIkK3X7Lx/4YsZEiUHtHsthWAOCYtf6PAiLhMtfwV0cWJRabLBS3+LD8x6Nrw==
+  dependencies:
+    "@types/node" "*"
+
 "@types/parse-json@^4.0.0":
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/@types/parse-json/-/parse-json-4.0.0.tgz#2f8bb441434d163b35fb8ffdccd7138927ffb8c0"
@@ -4123,6 +4130,11 @@ node-releases@^2.0.13:
   resolved "https://registry.yarnpkg.com/node-releases/-/node-releases-2.0.13.tgz#d5ed1627c23e3461e819b02e57b75e4899b1c81d"
   integrity sha512-uYr7J37ae/ORWdZeQ1xxMJe3NtdmqMC/JZK+geofDrkLUApKRHPd18/TxtBOJ4A0/+uUIliorNrfYV6s1b02eQ==
 
+nodemailer@^6.9.5:
+  version "6.9.5"
+  resolved "https://registry.yarnpkg.com/nodemailer/-/nodemailer-6.9.5.tgz#eaeae949c62ec84ef1e9128df89fc146a1017aca"
+  integrity sha512-/dmdWo62XjumuLc5+AYQZeiRj+PRR8y8qKtFCOyuOl1k/hckZd8durUUHs/ucKx6/8kN+wFxqKJlQ/LK/qR5FA==
+
 nopt@^5.0.0:
   version "5.0.0"
   resolved "https://registry.yarnpkg.com/nopt/-/nopt-5.0.0.tgz#530942bb58a512fccafe53fe210f13a25355dc88"
@@ -5101,10 +5113,10 @@ ts-proto-descriptors@1.15.0:
     long "^5.2.3"
     protobufjs "^7.2.4"
 
-ts-proto@^1.157.0:
-  version "1.157.1"
-  resolved "https://registry.yarnpkg.com/ts-proto/-/ts-proto-1.157.1.tgz#c35c31c3fc471bd884f1690fab631bd7435d3416"
-  integrity sha512-HgBaVkfT8O7260+IA/LI31bahrIIUgEjjW9Jh69ITN0dmlYevKX5pFteUkB/tS664B/c3uLHm0AyjFOyfyjNYg==
+ts-proto@^1.160.0:
+  version "1.160.0"
+  resolved "https://registry.yarnpkg.com/ts-proto/-/ts-proto-1.160.0.tgz#0ae62b7951c61476a28ce55ca3a964f5d8a0ff33"
+  integrity sha512-AUJQ0noLEkLew81MYmNPF/z8QDIBxAIJ4UKt9sH2AwdaywOTk1jh1NoluoCr3cGScpVh0GHWCB/UA4V0fOO8fg==
   dependencies:
     case-anything "^2.1.13"
     protobufjs "^7.2.4"

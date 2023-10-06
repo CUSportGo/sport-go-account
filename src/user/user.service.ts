@@ -8,7 +8,7 @@ import { Status } from '@prisma/client';
 
 @Injectable()
 export class UserService {
-  constructor(private userRepo: UserRepository) {}
+  constructor(private userRepo: UserRepository) { }
 
   findAllUsers() {
     try {

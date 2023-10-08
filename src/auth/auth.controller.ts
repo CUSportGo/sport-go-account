@@ -9,6 +9,8 @@ import {
   LogoutResponse,
   RegisterRequest,
   RegisterResponse,
+  ValidateTokenRequest,
+  ValidateTokenResponse,
   ResetPasswordRequest,
   ResetPasswordResponse,
   // ValidateGoogleRequest,
@@ -54,5 +56,10 @@ export class AuthController {
   ): Promise<ResetPasswordResponse> {
     return this.authService.resetPassword(request);
 
+  }
+
+  @GrpcMethod('AuthService', 'ValidateToken')
+  validateToken(request: ValidateTokenRequest): Promise<ValidateTokenResponse> {
+    return this.authService.validateToken(request);
   }
 }

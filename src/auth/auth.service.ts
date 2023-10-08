@@ -16,6 +16,8 @@ import {
   RefreshTokenResponse,
   RegisterRequest,
   RegisterResponse,
+  ValidateTokenRequest,
+  ValidateTokenResponse,
   ResetPasswordRequest,
   ResetPasswordResponse,
   // ValidateGoogleRequest,
@@ -39,7 +41,7 @@ export class AuthService implements AuthServiceController {
     private blacklistRepo: BlacklistRepository,
     private jwtService: JwtService,
     private configService: ConfigService,
-  ) { }
+  ) {}
 
   public async login(request: LoginRequest): Promise<LoginResponse> {
     try {
@@ -178,6 +180,40 @@ export class AuthService implements AuthServiceController {
     }
   }
 
+  public async validateToken(
+    request: ValidateTokenRequest,
+  ): Promise<ValidateTokenResponse> {
+    try {
+      const decodedToken = this.jwtService.verify(request.token, {
+        secret: this.configService.get<string>('JWT_ACCESS_SECRET'),
+      });
+      if (!decodedToken) {
+        return { isValid: false };
+      }
+      if (
+        decodedToken.registeredClaims.issuer !==
+        this.configService.get<string>('TOKEN_ISSUER')
+      ) {
+        return { isValid: false };
+      }
+
+      if (decodedToken.registeredClaims.expiredAt < Date.now()) {
+        return { isValid: false };
+      }
+
+      return { isValid: true };
+    } catch (err) {
+      console.log(err);
+      if (!(err instanceof RpcException)) {
+        throw new RpcException({
+          code: status.INTERNAL,
+          message: 'internal server error',
+        });
+      }
+      throw err;
+    }
+  }
+
   private async getTokens(userId: string) {
     try {
       const accessToken = await this.jwtService.signAsync(
@@ -185,7 +221,7 @@ export class AuthService implements AuthServiceController {
           sub: userId,
           registeredClaims: {
             issuer: this.configService.get<string>('TOKEN_ISSUER'),
-            expiredAt: Date.now() + 60 * 15,
+            expiredAt: Date.now() + 60 * 15 * 1000,
             issuedAt: Date.now(),
           },
         },
@@ -200,7 +236,7 @@ export class AuthService implements AuthServiceController {
           sub: userId,
           registeredClaims: {
             issuer: '',
-            expiredAt: Date.now() + 60 * 60 * 24 * 7,
+            expiredAt: Date.now() + 60 * 60 * 24 * 7 * 1000,
             issuedAt: Date.now(),
           },
         },

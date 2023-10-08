@@ -82,6 +82,14 @@ export interface ForgotPasswordResponse {
   resetPasswordUrl: string;
 }
 
+export interface ValidateTokenRequest {
+  token: string;
+}
+
+export interface ValidateTokenResponse {
+  isValid: boolean;
+}
+
 export const AUTH_PACKAGE_NAME = "auth";
 
 export interface AuthServiceClient {
@@ -99,6 +107,8 @@ export interface AuthServiceClient {
 
   logout(request: LogoutRequest): Observable<LogoutResponse>;
 
+  validateToken(request: ValidateTokenRequest): Observable<ValidateTokenResponse>;
+  
   forgotPassword(request: ForgotPasswordRequest): Observable<ForgotPasswordResponse>;
 }
 
@@ -121,6 +131,10 @@ export interface AuthServiceController {
 
   logout(request: LogoutRequest): Promise<LogoutResponse> | Observable<LogoutResponse> | LogoutResponse;
 
+  validateToken(
+    request: ValidateTokenRequest,
+  ): Promise<ValidateTokenResponse> | Observable<ValidateTokenResponse> | ValidateTokenResponse;
+
   forgotPassword(
     request: ForgotPasswordRequest,
   ): Promise<ForgotPasswordResponse> | Observable<ForgotPasswordResponse> | ForgotPasswordResponse;
@@ -136,6 +150,7 @@ export function AuthServiceControllerMethods() {
       "validateOAuth",
       "logout",
       "forgotPassword",
+      "validateToken",
     ];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);

@@ -264,6 +264,10 @@ export class AuthService implements AuthServiceController {
         password: hashedPassword,
       })
 
+      await this.blacklistRepo.addOutdatedToken({
+        outDatedAccessToken: request.accessToken,
+      });
+
       return { isDone: true }
     } catch (err: any) {
       console.log(err);

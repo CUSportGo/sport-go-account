@@ -49,7 +49,7 @@ export interface RefreshTokenRequest {
 }
 
 export interface RefreshTokenResponse {
-  credential: Credential | undefined;
+  newAccessToken: string;
 }
 
 export interface ValidateOAuthRequest {
@@ -108,7 +108,7 @@ export interface AuthServiceClient {
   logout(request: LogoutRequest): Observable<LogoutResponse>;
 
   validateToken(request: ValidateTokenRequest): Observable<ValidateTokenResponse>;
-  
+
   forgotPassword(request: ForgotPasswordRequest): Observable<ForgotPasswordResponse>;
 }
 
@@ -149,8 +149,8 @@ export function AuthServiceControllerMethods() {
       "resetPassword",
       "validateOAuth",
       "logout",
-      "forgotPassword",
       "validateToken",
+      "forgotPassword",
     ];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);

@@ -59,7 +59,7 @@ message RefreshTokenRequest {
 }
 
 message RefreshTokenResponse {
-  Credential credential = 1;
+  string newAccessToken = 1;
 }
 
 message ValidateOAuthRequest {

@@ -62,7 +62,10 @@ export class AuthService implements AuthServiceController {
         });
       }
 
-      const { accessToken, refreshToken } = await this.getTokens(user.id);
+      const { accessToken, refreshToken } = await this.getTokens(
+        user.id,
+        user.role,
+      );
       user = await this.userRepo.update(user.id, {
         refreshToken: refreshToken,
       });
@@ -199,7 +202,10 @@ export class AuthService implements AuthServiceController {
         }
       }
 
-      const { accessToken, refreshToken } = await this.getTokens(user.id);
+      const { accessToken, refreshToken } = await this.getTokens(
+        user.id,
+        user.role,
+      );
       user = await this.userRepo.update(user.id, {
         refreshToken: refreshToken,
       });
@@ -237,20 +243,20 @@ export class AuthService implements AuthServiceController {
         secret: this.configService.get<string>('JWT_ACCESS_SECRET'),
       });
       if (!decodedToken) {
-        return { isValid: false };
+        return { userId: '', role: '' };
       }
       if (
         decodedToken.registeredClaims.issuer !==
         this.configService.get<string>('TOKEN_ISSUER')
       ) {
-        return { isValid: false };
+        return { userId: '', role: '' };
       }
 
       if (decodedToken.registeredClaims.expiredAt < Date.now()) {
-        return { isValid: false };
+        return { userId: '', role: '' };
       }
 
-      return { isValid: true };
+      return { userId: decodedToken.sub, role: decodedToken.role };
     } catch (err) {
       console.log(err);
       if (!(err instanceof RpcException)) {
@@ -263,11 +269,12 @@ export class AuthService implements AuthServiceController {
     }
   }
 
-  private async getTokens(userId: string) {
+  private async getTokens(userId: string, role: string) {
     try {
       const accessToken = await this.jwtService.signAsync(
         {
           sub: userId,
+          role: role,
           registeredClaims: {
             issuer: this.configService.get<string>('TOKEN_ISSUER'),
             expiredAt: Date.now() + 60 * 15 * 1000,
@@ -411,7 +418,7 @@ export class AuthService implements AuthServiceController {
         });
       }
       // gen token
-      const userToken = (await this.getTokens(user.id)).accessToken;
+      const userToken = (await this.getTokens(user.id, user.role)).accessToken;
       const linkToResetPassword =
         'http://localhost:3000/reset-password/' + userToken;
 

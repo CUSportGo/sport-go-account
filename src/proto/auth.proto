@@ -96,5 +96,6 @@ message ValidateTokenRequest {
 }
 
 message ValidateTokenResponse {
-  bool is_valid = 1;
+  string userId = 1;
+  string role = 2;
 }

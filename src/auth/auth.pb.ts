@@ -87,7 +87,8 @@ export interface ValidateTokenRequest {
 }
 
 export interface ValidateTokenResponse {
-  isValid: boolean;
+  userId: string;
+  role: string;
 }
 
 export const AUTH_PACKAGE_NAME = "auth";

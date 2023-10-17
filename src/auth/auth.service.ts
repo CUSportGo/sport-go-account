@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserRepository } from '../repository/user.repository';
 import * as bcrypt from 'bcrypt';
@@ -24,7 +24,7 @@ import {
   // ValidateGoogleResponse,
   ValidateOAuthRequest
 } from './auth.pb';
-import { RpcException } from '@nestjs/microservices';
+import { ClientProxy, RpcException } from '@nestjs/microservices';
 import { status } from '@grpc/grpc-js';
 import { $Enums, Prisma } from '@prisma/client';
 import { v4 as uuidv4 } from 'uuid';
@@ -41,7 +41,8 @@ export class AuthService implements AuthServiceController {
     private blacklistRepo: BlacklistRepository,
     private jwtService: JwtService,
     private configService: ConfigService,
-  ) {}
+    @Inject('EMAIL_SERVICE') private client: ClientProxy,
+  ) { }
 
   public async login(request: LoginRequest): Promise<LoginResponse> {
     try {
@@ -361,15 +362,15 @@ export class AuthService implements AuthServiceController {
       const linkToResetPassword = "http://localhost:3000/reset-password/" + userToken;
 
       //set connection
-      const transporter = nodemailer.createTransport({
-        host: 'smtp.office365.com',
-        port: 587,
-        secure: false, // Set to true if using SSL
-        auth: {
-          user: process.env.EMAIL_USERNAME,
-          pass: process.env.EMAIL_PASSWORD,
-        },
-      });
+      // const transporter = nodemailer.createTransport({
+      //   host: 'smtp.office365.com',
+      //   port: 587,
+      //   secure: false, // Set to true if using SSL
+      //   auth: {
+      //     user: process.env.EMAIL_USERNAME,
+      //     pass: process.env.EMAIL_PASSWORD,
+      //   },
+      // });
 
       // Define email options
       const mailOptions = {
@@ -381,7 +382,10 @@ export class AuthService implements AuthServiceController {
           <a href="${linkToResetPassword}">Reset Password</a>
         `,
       };
-      await transporter.sendMail(mailOptions);
+
+      this.client.emit('forgot-password', { 'mailOptions': mailOptions });
+      // await transporter.sendMail(mailOptions);
+
       return { resetPasswordUrl: linkToResetPassword }
     } catch (err: any) {
       console.log(err);

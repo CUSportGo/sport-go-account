@@ -299,6 +299,7 @@ export class AuthService implements AuthServiceController {
       const refreshToken = await this.jwtService.signAsync(
         {
           sub: userId,
+          role: role,
           registeredClaims: {
             issuer: '',
             expiredAt: Date.now() + 60 * 60 * 24 * 7 * 1000,

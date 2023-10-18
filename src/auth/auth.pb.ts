@@ -50,6 +50,7 @@ export interface RefreshTokenRequest {
 
 export interface RefreshTokenResponse {
   newAccessToken: string;
+  accessTokenExpiresIn: number;
 }
 
 export interface ValidateOAuthRequest {

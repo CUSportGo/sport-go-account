@@ -139,7 +139,7 @@ export class AuthService implements AuthServiceController {
         },
       );
 
-      return { newAccessToken };
+      return { newAccessToken, accessTokenExpiresIn: 600 };
     } catch (err) {
       console.log(err);
       if (!(err instanceof RpcException)) {

@@ -22,7 +22,7 @@ import {
   ResetPasswordResponse,
   // ValidateGoogleRequest,
   // ValidateGoogleResponse,
-  ValidateOAuthRequest
+  ValidateOAuthRequest,
 } from './auth.pb';
 import { RpcException } from '@nestjs/microservices';
 import { status } from '@grpc/grpc-js';
@@ -32,7 +32,6 @@ import { Role } from '@prisma/client';
 import { BlacklistRepository } from '../repository/blacklist.repository';
 import { JwtPayload } from './strategies/accessToken.strategy';
 import * as nodemailer from 'nodemailer';
-
 
 @Injectable()
 export class AuthService implements AuthServiceController {
@@ -63,7 +62,10 @@ export class AuthService implements AuthServiceController {
         });
       }
 
-      const { accessToken, refreshToken } = await this.getTokens(user.id);
+      const { accessToken, refreshToken } = await this.getTokens(
+        user.id,
+        user.role,
+      );
       user = await this.userRepo.update(user.id, {
         refreshToken: refreshToken,
       });
@@ -97,7 +99,57 @@ export class AuthService implements AuthServiceController {
   public async refreshToken(
     request: RefreshTokenRequest,
   ): Promise<RefreshTokenResponse> {
-    return null;
+    try {
+      const decodedToken = this.jwtService.verify(request.refreshToken, {
+        secret: this.configService.get<string>('JWT_ACCESS_SECRET'),
+      });
+      if (decodedToken.registeredClaims.expiredAt < Date.now()) {
+        throw new RpcException({
+          code: status.PERMISSION_DENIED,
+          message: 'token expired',
+        });
+      }
+
+      const user = await this.userRepo.findUserById(decodedToken.sub);
+      if (!user) {
+        throw new RpcException({
+          code: status.NOT_FOUND,
+          message: 'user not found',
+        });
+      }
+      if (user.refreshToken != request.refreshToken) {
+        throw new RpcException({
+          code: status.PERMISSION_DENIED,
+          message: 'invalid token',
+        });
+      }
+
+      const newAccessToken = await this.jwtService.signAsync(
+        {
+          sub: decodedToken.sub,
+          registeredClaims: {
+            issuer: this.configService.get<string>('TOKEN_ISSUER'),
+            expiredAt: Date.now() + 60 * 15 * 1000,
+            issuedAt: Date.now(),
+          },
+        },
+        {
+          secret: this.configService.get<string>('JWT_ACCESS_SECRET'),
+          expiresIn: '15m',
+        },
+      );
+
+      return { newAccessToken, accessTokenExpiresIn: 600 };
+    } catch (err) {
+      console.log(err);
+      if (!(err instanceof RpcException)) {
+        throw new RpcException({
+          code: status.INTERNAL,
+          message: 'internal server error',
+        });
+      }
+      throw err;
+    }
   }
 
   public async validateOAuth(
@@ -150,7 +202,10 @@ export class AuthService implements AuthServiceController {
         }
       }
 
-      const { accessToken, refreshToken } = await this.getTokens(user.id);
+      const { accessToken, refreshToken } = await this.getTokens(
+        user.id,
+        user.role,
+      );
       user = await this.userRepo.update(user.id, {
         refreshToken: refreshToken,
       });
@@ -188,20 +243,29 @@ export class AuthService implements AuthServiceController {
         secret: this.configService.get<string>('JWT_ACCESS_SECRET'),
       });
       if (!decodedToken) {
-        return { isValid: false };
+        throw new RpcException({
+          code: status.PERMISSION_DENIED,
+          message: 'invalid token',
+        });
       }
       if (
         decodedToken.registeredClaims.issuer !==
         this.configService.get<string>('TOKEN_ISSUER')
       ) {
-        return { isValid: false };
+        throw new RpcException({
+          code: status.PERMISSION_DENIED,
+          message: 'invalid token',
+        });
       }
 
       if (decodedToken.registeredClaims.expiredAt < Date.now()) {
-        return { isValid: false };
+        throw new RpcException({
+          code: status.PERMISSION_DENIED,
+          message: 'invalid token',
+        });
       }
 
-      return { isValid: true };
+      return { userId: decodedToken.sub, role: decodedToken.role };
     } catch (err) {
       console.log(err);
       if (!(err instanceof RpcException)) {
@@ -214,11 +278,12 @@ export class AuthService implements AuthServiceController {
     }
   }
 
-  private async getTokens(userId: string) {
+  private async getTokens(userId: string, role: string) {
     try {
       const accessToken = await this.jwtService.signAsync(
         {
           sub: userId,
+          role: role,
           registeredClaims: {
             issuer: this.configService.get<string>('TOKEN_ISSUER'),
             expiredAt: Date.now() + 60 * 15 * 1000,
@@ -234,6 +299,7 @@ export class AuthService implements AuthServiceController {
       const refreshToken = await this.jwtService.signAsync(
         {
           sub: userId,
+          role: role,
           registeredClaims: {
             issuer: '',
             expiredAt: Date.now() + 60 * 60 * 24 * 7 * 1000,
@@ -283,9 +349,13 @@ export class AuthService implements AuthServiceController {
     }
   }
 
-  async resetPassword(request: ResetPasswordRequest): Promise<ResetPasswordResponse> {
+  async resetPassword(
+    request: ResetPasswordRequest,
+  ): Promise<ResetPasswordResponse> {
     try {
-      const credential = this.jwtService.decode(request.accessToken) as JwtPayload;
+      const credential = this.jwtService.decode(
+        request.accessToken,
+      ) as JwtPayload;
       const user = await this.userRepo.findUserById(credential.sub);
 
       const isPasswordMatch = await bcrypt.compare(
@@ -302,9 +372,9 @@ export class AuthService implements AuthServiceController {
       const hashedPassword = await bcrypt.hash(request.password, 12);
       await this.userRepo.update(user.id, {
         password: hashedPassword,
-      })
+      });
 
-      return { isDone: true }
+      return { isDone: true };
     } catch (err: any) {
       console.log(err);
       if (!(err instanceof RpcException)) {
@@ -346,8 +416,9 @@ export class AuthService implements AuthServiceController {
     return response;
   }
 
-
-  async forgotPassword(request: ForgotPasswordRequest): Promise<ForgotPasswordResponse> {
+  async forgotPassword(
+    request: ForgotPasswordRequest,
+  ): Promise<ForgotPasswordResponse> {
     try {
       const user = await this.userRepo.getUserByEmail(request.email);
       if (!user) {
@@ -357,8 +428,9 @@ export class AuthService implements AuthServiceController {
         });
       }
       // gen token
-      const userToken = (await this.getTokens(user.id)).accessToken;
-      const linkToResetPassword = "http://localhost:3000/reset-password/" + userToken;
+      const userToken = (await this.getTokens(user.id, user.role)).accessToken;
+      const linkToResetPassword =
+        'http://localhost:3000/reset-password/' + userToken;
 
       //set connection
       const transporter = nodemailer.createTransport({
@@ -382,7 +454,7 @@ export class AuthService implements AuthServiceController {
         `,
       };
       await transporter.sendMail(mailOptions);
-      return { resetPasswordUrl: linkToResetPassword }
+      return { resetPasswordUrl: linkToResetPassword };
     } catch (err: any) {
       console.log(err);
       if (!(err instanceof RpcException)) {

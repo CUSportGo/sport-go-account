@@ -243,17 +243,26 @@ export class AuthService implements AuthServiceController {
         secret: this.configService.get<string>('JWT_ACCESS_SECRET'),
       });
       if (!decodedToken) {
-        return { userId: '', role: '' };
+        throw new RpcException({
+          code: status.PERMISSION_DENIED,
+          message: 'invalid token',
+        });
       }
       if (
         decodedToken.registeredClaims.issuer !==
         this.configService.get<string>('TOKEN_ISSUER')
       ) {
-        return { userId: '', role: '' };
+        throw new RpcException({
+          code: status.PERMISSION_DENIED,
+          message: 'invalid token',
+        });
       }
 
       if (decodedToken.registeredClaims.expiredAt < Date.now()) {
-        return { userId: '', role: '' };
+        throw new RpcException({
+          code: status.PERMISSION_DENIED,
+          message: 'invalid token',
+        });
       }
 
       return { userId: decodedToken.sub, role: decodedToken.role };

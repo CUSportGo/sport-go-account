@@ -24,6 +24,10 @@ describe('AuthService', () => {
   const mockBlacklistRepository = {
     addOutdatedToken: jest.fn(),
   }
+
+  const mockEmailService = {
+    emit: jest.fn(),
+  }
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [AuthService,
@@ -44,6 +48,10 @@ describe('AuthService', () => {
         {
           provide: BlacklistRepository,
           useValue: mockBlacklistRepository,
+        },
+        {
+          provide: 'EMAIL_SERVICE',
+          useValue: mockEmailService,
         }
       ],
     }).compile();

@@ -261,7 +261,7 @@ export class AuthService implements AuthServiceController {
       if (decodedToken.registeredClaims.expiredAt < Date.now()) {
         throw new RpcException({
           code: status.PERMISSION_DENIED,
-          message: 'invalid token',
+          message: 'outdated token',
         });
       }
 
@@ -270,8 +270,8 @@ export class AuthService implements AuthServiceController {
       console.log(err);
       if (!(err instanceof RpcException)) {
         throw new RpcException({
-          code: status.INTERNAL,
-          message: 'internal server error',
+          code: status.PERMISSION_DENIED,
+          message: 'cannot verify token',
         });
       }
       throw err;

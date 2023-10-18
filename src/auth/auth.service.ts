@@ -23,6 +23,8 @@ import {
   // ValidateGoogleRequest,
   // ValidateGoogleResponse,
   ValidateOAuthRequest,
+  UpdateUserRequest,
+  UpdateUserResponse,
 } from './auth.pb';
 import { RpcException } from '@nestjs/microservices';
 import { status } from '@grpc/grpc-js';
@@ -32,6 +34,7 @@ import { Role } from '@prisma/client';
 import { BlacklistRepository } from '../repository/blacklist.repository';
 import { JwtPayload } from './strategies/accessToken.strategy';
 import * as nodemailer from 'nodemailer';
+import { Observable } from 'rxjs';
 
 @Injectable()
 export class AuthService implements AuthServiceController {
@@ -465,5 +468,11 @@ export class AuthService implements AuthServiceController {
       }
       throw err;
     }
+  }
+  public async updateUser(
+    request: UpdateUserRequest,
+  ): Promise<UpdateUserResponse> {
+    console.log(request);
+    return;
   }
 }

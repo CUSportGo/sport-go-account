@@ -12,8 +12,20 @@ service AuthService {
   rpc Logout(LogoutRequest) returns (LogoutResponse) {}
   rpc ValidateToken(ValidateTokenRequest) returns (ValidateTokenResponse) {}
   rpc ForgotPassword(ForgotPasswordRequest) returns (ForgotPasswordResponse) {}
+  rpc UpdateUser(UpdateUserRequest) returns (UpdateUserResponse){}
 }
 
+
+message UpdateUserRequest{
+  string userId = 1;
+  map<string, string> fieldToUpdate=2;
+}
+
+message UpdateUserResponse{
+  string userId = 1;
+  map<string, string> fieldToUpdate=2;
+
+}
 message RegisterRequest {
   string firstName =1;
   string lastName =2;

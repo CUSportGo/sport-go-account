@@ -66,4 +66,9 @@ export class AuthController {
   validateToken(request: ValidateTokenRequest): Promise<ValidateTokenResponse> {
     return this.authService.validateToken(request);
   }
+
+  @GrpcMethod('AuthService', 'UpdateUser')
+  updateUser(request: ValidateTokenRequest): Promise<ValidateTokenResponse> {
+    return this.authService.validateToken(request);
+  }
 }

@@ -55,12 +55,12 @@ message LoginResponse {
 }
 
 message RefreshTokenRequest {
-  string refresh_token = 1;
+  string refreshToken = 1;
 }
 
 message RefreshTokenResponse {
   string newAccessToken = 1;
-  int32 access_token_expires_in = 2;
+  int32 accessTokenExpiresIn = 2;
 }
 
 message ValidateOAuthRequest {

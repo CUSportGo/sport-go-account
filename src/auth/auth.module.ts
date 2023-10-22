@@ -7,10 +7,18 @@ import { JwtModule, JwtService } from '@nestjs/jwt';
 import { AccessTokenStrategy } from './strategies/accessToken.strategy';
 import { ConfigService } from '@nestjs/config';
 import { BlacklistRepository } from 'src/repository/blacklist.repository';
+import { SportAreaListRepository } from 'src/repository/sportAreaList.repository';
 
 @Module({
   imports: [PrismaModule, JwtModule.register({})],
-  providers: [AuthService, UserRepository, AccessTokenStrategy, ConfigService, BlacklistRepository],
+  providers: [
+    AuthService,
+    UserRepository,
+    AccessTokenStrategy,
+    ConfigService,
+    BlacklistRepository,
+    SportAreaListRepository,
+  ],
   controllers: [AuthController],
 })
-export class AuthModule { }
+export class AuthModule {}

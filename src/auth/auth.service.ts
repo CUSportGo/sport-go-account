@@ -23,8 +23,8 @@ import {
   // ValidateGoogleRequest,
   // ValidateGoogleResponse,
   ValidateOAuthRequest,
-  UpdateUserRequest,
-  UpdateUserResponse,
+  UpdateUserSportAreaRequest,
+  UpdateUserSportAreaResponse,
 } from './auth.pb';
 import { RpcException } from '@nestjs/microservices';
 import { status } from '@grpc/grpc-js';
@@ -32,6 +32,7 @@ import { $Enums, Prisma } from '@prisma/client';
 import { v4 as uuidv4 } from 'uuid';
 import { Role } from '@prisma/client';
 import { BlacklistRepository } from '../repository/blacklist.repository';
+import { SportAreaListRepository } from 'src/repository/sportAreaList.repository';
 import { JwtPayload } from './strategies/accessToken.strategy';
 import * as nodemailer from 'nodemailer';
 import { Observable } from 'rxjs';
@@ -43,6 +44,7 @@ export class AuthService implements AuthServiceController {
     private blacklistRepo: BlacklistRepository,
     private jwtService: JwtService,
     private configService: ConfigService,
+    private sportAreaListRepo: SportAreaListRepository,
   ) {}
 
   public async login(request: LoginRequest): Promise<LoginResponse> {
@@ -469,10 +471,10 @@ export class AuthService implements AuthServiceController {
       throw err;
     }
   }
-  public async updateUser(
-    request: UpdateUserRequest,
-  ): Promise<UpdateUserResponse> {
-    console.log(request);
-    return;
+  public async updateUserSportArea(
+    request: UpdateUserSportAreaRequest,
+  ): Promise<UpdateUserSportAreaResponse> {
+    const user = await this.sportAreaListRepo.addSportArea(request);
+    return request;
   }
 }

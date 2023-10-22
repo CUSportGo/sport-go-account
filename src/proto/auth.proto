@@ -12,18 +12,18 @@ service AuthService {
   rpc Logout(LogoutRequest) returns (LogoutResponse) {}
   rpc ValidateToken(ValidateTokenRequest) returns (ValidateTokenResponse) {}
   rpc ForgotPassword(ForgotPasswordRequest) returns (ForgotPasswordResponse) {}
-  rpc UpdateUser(UpdateUserRequest) returns (UpdateUserResponse){}
+  rpc UpdateUserSportArea(UpdateUserSportAreaRequest) returns (UpdateUserSportAreaResponse){}
 }
 
 
-message UpdateUserRequest{
+message UpdateUserSportAreaRequest{
   string userId = 1;
-  map<string, string> fieldToUpdate=2;
+  string sportAreaId=2;
 }
 
-message UpdateUserResponse{
+message UpdateUserSportAreaResponse{
   string userId = 1;
-  map<string, string> fieldToUpdate=2;
+  string sportAreaId=2;
 
 }
 message RegisterRequest {

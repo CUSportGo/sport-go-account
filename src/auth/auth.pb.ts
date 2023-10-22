@@ -4,24 +4,14 @@ import { Observable } from "rxjs";
 
 export const protobufPackage = "auth";
 
-export interface UpdateUserRequest {
+export interface UpdateUserSportAreaRequest {
   userId: string;
-  fieldToUpdate: { [key: string]: string };
+  sportAreaId: string;
 }
 
-export interface UpdateUserRequest_FieldToUpdateEntry {
-  key: string;
-  value: string;
-}
-
-export interface UpdateUserResponse {
+export interface UpdateUserSportAreaResponse {
   userId: string;
-  fieldToUpdate: { [key: string]: string };
-}
-
-export interface UpdateUserResponse_FieldToUpdateEntry {
-  key: string;
-  value: string;
+  sportAreaId: string;
 }
 
 export interface RegisterRequest {
@@ -133,7 +123,7 @@ export interface AuthServiceClient {
 
   forgotPassword(request: ForgotPasswordRequest): Observable<ForgotPasswordResponse>;
 
-  updateUser(request: UpdateUserRequest): Observable<UpdateUserResponse>;
+  updateUserSportArea(request: UpdateUserSportAreaRequest): Observable<UpdateUserSportAreaResponse>;
 }
 
 export interface AuthServiceController {
@@ -163,9 +153,9 @@ export interface AuthServiceController {
     request: ForgotPasswordRequest,
   ): Promise<ForgotPasswordResponse> | Observable<ForgotPasswordResponse> | ForgotPasswordResponse;
 
-  updateUser(
-    request: UpdateUserRequest,
-  ): Promise<UpdateUserResponse> | Observable<UpdateUserResponse> | UpdateUserResponse;
+  updateUserSportArea(
+    request: UpdateUserSportAreaRequest,
+  ): Promise<UpdateUserSportAreaResponse> | Observable<UpdateUserSportAreaResponse> | UpdateUserSportAreaResponse;
 }
 
 export function AuthServiceControllerMethods() {
@@ -179,7 +169,7 @@ export function AuthServiceControllerMethods() {
       "logout",
       "validateToken",
       "forgotPassword",
-      "updateUser",
+      "updateUserSportArea",
     ];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);

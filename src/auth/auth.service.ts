@@ -32,7 +32,7 @@ import { $Enums, Prisma } from '@prisma/client';
 import { v4 as uuidv4 } from 'uuid';
 import { Role } from '@prisma/client';
 import { BlacklistRepository } from '../repository/blacklist.repository';
-import { SportAreaListRepository } from 'src/repository/sportAreaList.repository';
+import { SportAreaListRepository } from '../repository/sportAreaList.repository';
 import { JwtPayload } from './strategies/accessToken.strategy';
 import * as nodemailer from 'nodemailer';
 import { Observable } from 'rxjs';

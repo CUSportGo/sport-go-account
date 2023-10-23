@@ -55,11 +55,12 @@ message LoginResponse {
 }
 
 message RefreshTokenRequest {
-  string refresh_token = 1;
+  string refreshToken = 1;
 }
 
 message RefreshTokenResponse {
-  Credential credential = 1;
+  string newAccessToken = 1;
+  int32 accessTokenExpiresIn = 2;
 }
 
 message ValidateOAuthRequest {
@@ -96,5 +97,6 @@ message ValidateTokenRequest {
 }
 
 message ValidateTokenResponse {
-  bool is_valid = 1;
+  string userId = 1;
+  string role = 2;
 }

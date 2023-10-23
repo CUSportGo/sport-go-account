@@ -29,6 +29,10 @@ describe('AuthService', () => {
   const mockSportAreaListRepository = {
     addSportArea: jest.fn(),
   };
+
+  const mockEmailService = {
+    emit: jest.fn(),
+  };
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -52,9 +56,15 @@ describe('AuthService', () => {
           useValue: mockBlacklistRepository,
         },
         {
+
           provide: SportAreaListRepository,
           useValue: mockSportAreaListRepository,
         },
+
+          provide: 'EMAIL_SERVICE',
+          useValue: mockEmailService,
+        }
+
       ],
     }).compile();
 

@@ -45,11 +45,8 @@ export class AuthService implements AuthServiceController {
     private jwtService: JwtService,
     private configService: ConfigService,
     private sportAreaListRepo: SportAreaListRepository,
-  ) {}
-
     @Inject('EMAIL_SERVICE') private client: ClientProxy,
-  ) { }
-
+  ) {}
 
   public async login(request: LoginRequest): Promise<LoginResponse> {
     try {
@@ -463,13 +460,10 @@ export class AuthService implements AuthServiceController {
         `,
       };
 
-
-      this.client.emit('forgot-password', { 'mailOptions': mailOptions });
+      this.client.emit('forgot-password', { mailOptions: mailOptions });
       // await transporter.sendMail(mailOptions);
 
-      return { resetPasswordUrl: linkToResetPassword }
-
-
+      return { resetPasswordUrl: linkToResetPassword };
     } catch (err: any) {
       console.log(err);
       if (!(err instanceof RpcException)) {

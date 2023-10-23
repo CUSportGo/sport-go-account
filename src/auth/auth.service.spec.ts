@@ -56,15 +56,13 @@ describe('AuthService', () => {
           useValue: mockBlacklistRepository,
         },
         {
-
           provide: SportAreaListRepository,
           useValue: mockSportAreaListRepository,
         },
-
+        {
           provide: 'EMAIL_SERVICE',
           useValue: mockEmailService,
-        }
-
+        },
       ],
     }).compile();
 

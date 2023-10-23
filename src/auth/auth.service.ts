@@ -474,7 +474,18 @@ export class AuthService implements AuthServiceController {
   public async updateUserSportArea(
     request: UpdateUserSportAreaRequest,
   ): Promise<UpdateUserSportAreaResponse> {
-    const user = await this.sportAreaListRepo.addSportArea(request);
-    return request;
+    try {
+      const user = await this.sportAreaListRepo.addSportArea(request);
+      return request;
+    } catch (err: any) {
+      console.log(err);
+      if (!(err instanceof RpcException)) {
+        throw new RpcException({
+          code: status.INTERNAL,
+          message: 'internal server error cant add new sportarea to user',
+        });
+      }
+      throw err;
+    }
   }
 }

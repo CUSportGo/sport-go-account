@@ -7,7 +7,7 @@ import { UserRepository } from './user.repository';
 
 @Injectable()
 export class SportAreaListRepository {
-  constructor(private db: PrismaService, private userRepo: UserRepository) {}
+  constructor(private db: PrismaService) {}
 
   async addSportArea(
     updateInfo: UpdateUserSportAreaRequest,

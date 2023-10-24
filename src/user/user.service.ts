@@ -10,9 +10,9 @@ import { Status } from '@prisma/client';
 export class UserService {
   constructor(private userRepo: UserRepository) { }
 
-  findAllUsers() {
+  async findAllUsers() {
     try {
-      const allUsers = this.userRepo.getAllUsers();
+      const allUsers = await this.userRepo.getAllUsers();
       return allUsers;
     } catch (e) {
       console.log(e);

@@ -4,6 +4,16 @@ import { Observable } from "rxjs";
 
 export const protobufPackage = "auth";
 
+export interface UpdateUserSportAreaRequest {
+  userId: string;
+  sportAreaId: string;
+}
+
+export interface UpdateUserSportAreaResponse {
+  userId: string;
+  sportAreaId: string;
+}
+
 export interface RegisterRequest {
   firstName: string;
   lastName: string;
@@ -112,6 +122,8 @@ export interface AuthServiceClient {
   validateToken(request: ValidateTokenRequest): Observable<ValidateTokenResponse>;
 
   forgotPassword(request: ForgotPasswordRequest): Observable<ForgotPasswordResponse>;
+
+  updateUserSportArea(request: UpdateUserSportAreaRequest): Observable<UpdateUserSportAreaResponse>;
 }
 
 export interface AuthServiceController {
@@ -140,6 +152,10 @@ export interface AuthServiceController {
   forgotPassword(
     request: ForgotPasswordRequest,
   ): Promise<ForgotPasswordResponse> | Observable<ForgotPasswordResponse> | ForgotPasswordResponse;
+
+  updateUserSportArea(
+    request: UpdateUserSportAreaRequest,
+  ): Promise<UpdateUserSportAreaResponse> | Observable<UpdateUserSportAreaResponse> | UpdateUserSportAreaResponse;
 }
 
 export function AuthServiceControllerMethods() {
@@ -153,6 +169,7 @@ export function AuthServiceControllerMethods() {
       "logout",
       "validateToken",
       "forgotPassword",
+      "updateUserSportArea",
     ];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);

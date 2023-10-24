@@ -23,6 +23,8 @@ import {
   // ValidateGoogleRequest,
   // ValidateGoogleResponse,
   ValidateOAuthRequest,
+  UpdateUserSportAreaRequest,
+  UpdateUserSportAreaResponse,
 } from './auth.pb';
 import { ClientProxy, RpcException } from '@nestjs/microservices';
 import { status } from '@grpc/grpc-js';
@@ -30,8 +32,10 @@ import { $Enums, Prisma } from '@prisma/client';
 import { v4 as uuidv4 } from 'uuid';
 import { Role } from '@prisma/client';
 import { BlacklistRepository } from '../repository/blacklist.repository';
+import { SportAreaListRepository } from '../repository/sportAreaList.repository';
 import { JwtPayload } from './strategies/accessToken.strategy';
 import * as nodemailer from 'nodemailer';
+import { Observable } from 'rxjs';
 
 @Injectable()
 export class AuthService implements AuthServiceController {
@@ -40,8 +44,9 @@ export class AuthService implements AuthServiceController {
     private blacklistRepo: BlacklistRepository,
     private jwtService: JwtService,
     private configService: ConfigService,
+    private sportAreaListRepo: SportAreaListRepository,
     @Inject('EMAIL_SERVICE') private client: ClientProxy,
-  ) { }
+  ) {}
 
   public async login(request: LoginRequest): Promise<LoginResponse> {
     try {
@@ -455,19 +460,33 @@ export class AuthService implements AuthServiceController {
         `,
       };
 
-
-      this.client.emit('forgot-password', { 'mailOptions': mailOptions });
+      this.client.emit('forgot-password', { mailOptions: mailOptions });
       // await transporter.sendMail(mailOptions);
 
-      return { resetPasswordUrl: linkToResetPassword }
-
-
+      return { resetPasswordUrl: linkToResetPassword };
     } catch (err: any) {
       console.log(err);
       if (!(err instanceof RpcException)) {
         throw new RpcException({
           code: status.INTERNAL,
           message: 'internal server error',
+        });
+      }
+      throw err;
+    }
+  }
+  public async updateUserSportArea(
+    request: UpdateUserSportAreaRequest,
+  ): Promise<UpdateUserSportAreaResponse> {
+    try {
+      const user = await this.sportAreaListRepo.addSportArea(request);
+      return request;
+    } catch (err: any) {
+      console.log(err);
+      if (!(err instanceof RpcException)) {
+        throw new RpcException({
+          code: status.INTERNAL,
+          message: 'internal server error cant add new sportarea to user',
         });
       }
       throw err;

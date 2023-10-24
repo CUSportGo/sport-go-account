@@ -25,6 +25,13 @@ model User {
   status       Status   @default(ACTIVE)
   googleID     String?  @unique
   facebookID   String?  @unique
+  sportArea    SportArea[]
+}
+
+model SportArea {
+  SportAreaId     String     @unique
+  userId          String
+  user            User       @relation(fields: [userId], references: [id])
 }
 
 enum Role {

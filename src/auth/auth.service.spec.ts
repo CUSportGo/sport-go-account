@@ -4,6 +4,7 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { UserRepository } from '../repository/user.repository';
 import { BlacklistRepository } from '../repository/blacklist.repository';
+import { SportAreaListRepository } from '../repository/sportAreaList.repository';
 describe('AuthService', () => {
   let service: AuthService;
   const mockJwtService = {
@@ -15,22 +16,27 @@ describe('AuthService', () => {
   };
   const mockUserRepository = {
     getUserByEmail: jest.fn(),
-    updateRefreshToken: jest.fn()
-  }
+    updateRefreshToken: jest.fn(),
+  };
 
   const mockConfigService = {
     get: jest.fn(),
-  }
+  };
   const mockBlacklistRepository = {
     addOutdatedToken: jest.fn(),
-  }
+  };
+
+  const mockSportAreaListRepository = {
+    addSportArea: jest.fn(),
+  };
 
   const mockEmailService = {
     emit: jest.fn(),
-  }
+  };
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [AuthService,
+      providers: [
+        AuthService,
         {
           provide: JwtService,
           useValue: mockJwtService,
@@ -50,9 +56,13 @@ describe('AuthService', () => {
           useValue: mockBlacklistRepository,
         },
         {
+          provide: SportAreaListRepository,
+          useValue: mockSportAreaListRepository,
+        },
+        {
           provide: 'EMAIL_SERVICE',
           useValue: mockEmailService,
-        }
+        },
       ],
     }).compile();
 

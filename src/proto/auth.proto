@@ -12,8 +12,20 @@ service AuthService {
   rpc Logout(LogoutRequest) returns (LogoutResponse) {}
   rpc ValidateToken(ValidateTokenRequest) returns (ValidateTokenResponse) {}
   rpc ForgotPassword(ForgotPasswordRequest) returns (ForgotPasswordResponse) {}
+  rpc UpdateUserSportArea(UpdateUserSportAreaRequest) returns (UpdateUserSportAreaResponse){}
 }
 
+
+message UpdateUserSportAreaRequest{
+  string userId = 1;
+  string sportAreaId=2;
+}
+
+message UpdateUserSportAreaResponse{
+  string userId = 1;
+  string sportAreaId=2;
+
+}
 message RegisterRequest {
   string firstName =1;
   string lastName =2;

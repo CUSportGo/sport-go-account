@@ -18,6 +18,8 @@ import {
   ValidateOAuthRequest,
   RefreshTokenRequest,
   RefreshTokenResponse,
+  UpdateUserSportAreaResponse,
+  UpdateUserSportAreaRequest,
 } from './auth.pb';
 import { AuthService } from './auth.service';
 
@@ -65,5 +67,12 @@ export class AuthController {
   @GrpcMethod('AuthService', 'ValidateToken')
   validateToken(request: ValidateTokenRequest): Promise<ValidateTokenResponse> {
     return this.authService.validateToken(request);
+  }
+
+  @GrpcMethod('AuthService', 'UpdateUserSportArea')
+  updateUserSportArea(
+    request: UpdateUserSportAreaRequest,
+  ): Promise<UpdateUserSportAreaResponse> {
+    return this.authService.updateUserSportArea(request);
   }
 }

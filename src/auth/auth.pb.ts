@@ -69,7 +69,7 @@ export interface ValidateOAuthRequest {
 }
 
 export interface LogoutRequest {
-  credential: Credential | undefined;
+  accessToken: string;
 }
 
 export interface ResetPasswordRequest {
@@ -111,8 +111,6 @@ export interface AuthServiceClient {
 
   register(request: RegisterRequest): Observable<RegisterResponse>;
 
-  /** rpc ValidateGoogle(ValidateGoogleRequest) returns (ValidateGoogleResponse) {} */
-
   resetPassword(request: ResetPasswordRequest): Observable<ResetPasswordResponse>;
 
   validateOAuth(request: ValidateOAuthRequest): Observable<LoginResponse>;
@@ -134,8 +132,6 @@ export interface AuthServiceController {
   ): Promise<RefreshTokenResponse> | Observable<RefreshTokenResponse> | RefreshTokenResponse;
 
   register(request: RegisterRequest): Promise<RegisterResponse> | Observable<RegisterResponse> | RegisterResponse;
-
-  /** rpc ValidateGoogle(ValidateGoogleRequest) returns (ValidateGoogleResponse) {} */
 
   resetPassword(
     request: ResetPasswordRequest,

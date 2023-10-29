@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserService } from './user.service';
 import { UserRepository } from '../repository/user.repository';
+import { SportAreaListRepository } from '../repository/sportAreaList.repository';
 
 describe('UserService', () => {
   let service: UserService;
@@ -10,6 +11,8 @@ describe('UserService', () => {
     exclude: jest.fn(),
   };
 
+  const mockSportAreaListRepo = {};
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -17,6 +20,10 @@ describe('UserService', () => {
         {
           provide: UserRepository,
           useValue: mockUserRepository,
+        },
+        {
+          provide: SportAreaListRepository,
+          useValue: mockSportAreaListRepo,
         },
       ],
     }).compile();

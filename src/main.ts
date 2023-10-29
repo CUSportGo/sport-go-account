@@ -17,9 +17,22 @@ async function bootstrap() {
     },
   };
 
-  app.connectMicroservice(authGrpcOptions);
+  const userGrpcOptions: MicroserviceOptions = {
+    transport: Transport.GRPC,
+    options: {
+      package: 'user',
+      protoPath: join(__dirname, 'proto/user.proto'),
+      url: `0.0.0.0:${
+        process.env.USER_GRPC_PORT ? parseInt(process.env.USER_GRPC_PORT) : 8081
+      }`,
+    },
+  };
 
+  app.connectMicroservice(authGrpcOptions);
+  app.connectMicroservice(userGrpcOptions);
   await app.startAllMicroservices();
-  await app.listen(8082);
+  await app.listen(
+    process.env.USER_REST_PORT ? parseInt(process.env.USER_REST_PORT) : 8082,
+  );
 }
 bootstrap();

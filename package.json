@@ -19,7 +19,7 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "migrate": "npx prisma migrate dev",
-    "proto": "protoc --plugin=./node_modules/.bin/protoc-gen-ts_proto --proto_path=./src/proto --ts_proto_out=./src/auth src/proto/auth.proto --ts_proto_opt=nestJs=true --ts_proto_opt=fileSuffix=.pb"
+    "proto": "protoc --plugin=./node_modules/.bin/protoc-gen-ts_proto --proto_path=./src/proto --ts_proto_out=./src/auth auth.proto --ts_proto_opt=nestJs=true --ts_proto_opt=fileSuffix=.pb; protoc --plugin=./node_modules/.bin/protoc-gen-ts_proto --proto_path=./src/proto --ts_proto_out=./src/user user.proto --ts_proto_opt=nestJs=true --ts_proto_opt=fileSuffix=.pb"
   },
   "dependencies": {
     "@grpc/grpc-js": "^1.9.2",

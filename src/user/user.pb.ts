@@ -10,7 +10,7 @@ export interface GetUserSportAreaRequest {
 
 export interface GetUserSportAreaResponse {
   userId: string;
-  sportArea: string;
+  sportAreaId: string;
 }
 
 export const USER_PACKAGE_NAME = "user";

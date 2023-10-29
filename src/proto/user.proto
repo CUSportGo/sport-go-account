@@ -12,5 +12,5 @@ message GetUserSportAreaRequest {
 
 message GetUserSportAreaResponse {
   string userId = 1;
-  string sportArea =2;
+  string sportAreaId =2;
 }

@@ -395,11 +395,11 @@ export class AuthService implements AuthServiceController {
   public async logout(request: LogoutRequest): Promise<LogoutResponse> {
     try {
       await this.blacklistRepo.addOutdatedToken({
-        outDatedAccessToken: request.credential.accessToken,
+        outDatedAccessToken: request.accessToken,
       });
 
       let credential = this.jwtService.decode(
-        request.credential.refreshToken,
+        request.accessToken,
       ) as JwtPayload;
       let userId = credential.sub;
 

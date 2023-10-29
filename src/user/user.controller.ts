@@ -1,10 +1,12 @@
 import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
 import { UserService } from './user.service';
 import { User } from 'src/model/user.dto';
+import { GetUserSportAreaRequest, GetUserSportAreaResponse } from './user.pb';
+import { GrpcMethod } from '@nestjs/microservices';
 
 @Controller('user')
 export class UserController {
-  constructor(private userService: UserService) { }
+  constructor(private userService: UserService) {}
 
   @Get()
   findAllUsers() {
@@ -19,5 +21,12 @@ export class UserController {
   @Patch('unban/:userId')
   unbanUser(@Param('userId') userId: string): Promise<User> {
     return this.userService.unbanUser(userId);
+  }
+
+  @GrpcMethod('UserService', 'GetUserSportArea')
+  getUserSportArea(
+    request: GetUserSportAreaRequest,
+  ): Promise<GetUserSportAreaResponse> {
+    return this.userService.getUserSportArea(request);
   }
 }

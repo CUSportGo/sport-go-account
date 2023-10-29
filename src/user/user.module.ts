@@ -3,10 +3,11 @@ import { UserController } from './user.controller';
 import { UserService } from './user.service';
 import { UserRepository } from 'src/repository/user.repository';
 import { PrismaModule } from 'src/prisma/prisma.module';
+import { SportAreaListRepository } from '../repository/sportAreaList.repository';
 
 @Module({
   imports: [PrismaModule],
   controllers: [UserController],
-  providers: [UserService, UserRepository]
+  providers: [UserService, UserRepository, SportAreaListRepository],
 })
-export class UserModule { }
+export class UserModule {}

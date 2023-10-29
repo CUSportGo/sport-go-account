@@ -23,7 +23,7 @@ async function bootstrap() {
       package: 'user',
       protoPath: join(__dirname, 'proto/user.proto'),
       url: `0.0.0.0:${
-        process.env.USER_GRPC_PORT ? parseInt(process.env.AUTH_GRPC_PORT) : 8081
+        process.env.USER_GRPC_PORT ? parseInt(process.env.USER_GRPC_PORT) : 8081
       }`,
     },
   };

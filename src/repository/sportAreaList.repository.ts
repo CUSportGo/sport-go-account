@@ -19,4 +19,10 @@ export class SportAreaListRepository {
       },
     });
   }
+
+  async findUserSportArea(sportAreaId: string): Promise<SportArea> {
+    return await this.db.sportArea.findFirst({
+      where: { SportAreaId: sportAreaId },
+    });
+  }
 }

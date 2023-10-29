@@ -37,6 +37,7 @@ model SportArea {
 enum Role {
   USER
   SPORTAREA
+  ADMIN
 }
 
 enum Status {

@@ -4,9 +4,20 @@ import { FileService } from './file.service';
 describe('FileService', () => {
   let service: FileService;
 
+  const mockFileClient = {
+    uploadFile: jest.fn(),
+    getSignedUrl: jest.fn(),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [FileService],
+      providers: [
+        FileService,
+        {
+          provide: 'FILE_PACKAGE',
+          useValue: mockFileClient,
+        },
+      ],
     }).compile();
 
     service = module.get<FileService>(FileService);

@@ -11,27 +11,28 @@ datasource db {
 }
 
 model User {
-  id           String   @id
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  firstName    String
-  lastName     String
-  email        String   @unique
-  phoneNumber  String?
-  password     String?
-  photoURL     String?
-  role         Role     @default(USER)
-  refreshToken String?
-  status       Status   @default(ACTIVE)
-  googleID     String?  @unique
-  facebookID   String?  @unique
-  sportArea    SportArea[]
+  id            String      @id
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  firstName     String
+  lastName      String
+  email         String      @unique
+  phoneNumber   String?
+  password      String?
+  photoURL      String?
+  photoFileName String?
+  role          Role        @default(USER)
+  refreshToken  String?
+  status        Status      @default(ACTIVE)
+  googleID      String?     @unique
+  facebookID    String?     @unique
+  sportArea     SportArea[]
 }
 
 model SportArea {
-  SportAreaId     String     @unique
-  userId          String
-  user            User       @relation(fields: [userId], references: [id])
+  SportAreaId String @unique
+  userId      String
+  user        User   @relation(fields: [userId], references: [id])
 }
 
 enum Role {

@@ -20,8 +20,6 @@ import {
   ValidateTokenResponse,
   ResetPasswordRequest,
   ResetPasswordResponse,
-  // ValidateGoogleRequest,
-  // ValidateGoogleResponse,
   ValidateOAuthRequest,
   UpdateUserSportAreaRequest,
   UpdateUserSportAreaResponse,
@@ -34,8 +32,9 @@ import { Role } from '@prisma/client';
 import { BlacklistRepository } from '../repository/blacklist.repository';
 import { SportAreaListRepository } from '../repository/sportAreaList.repository';
 import { JwtPayload } from './strategies/accessToken.strategy';
-import * as nodemailer from 'nodemailer';
-import { Observable } from 'rxjs';
+import { FileService } from '../file/file.service';
+import { UploadFileRequest, UploadFileResponse } from '../file/file.pb';
+import { profile } from 'console';
 
 @Injectable()
 export class AuthService implements AuthServiceController {
@@ -45,6 +44,7 @@ export class AuthService implements AuthServiceController {
     private jwtService: JwtService,
     private configService: ConfigService,
     private sportAreaListRepo: SportAreaListRepository,
+    private fileService: FileService,
     @Inject('EMAIL_SERVICE') private client: ClientProxy,
   ) {}
 
@@ -337,17 +337,35 @@ export class AuthService implements AuthServiceController {
           message: 'Duplicate Email',
         });
       } else {
+        const userId = uuidv4();
+        let profileImage: UploadFileResponse;
+        if (request.imageName && request.imageData) {
+          const uploadFileRequest: UploadFileRequest = {
+            filename: request.imageName,
+            data: request.imageData,
+            userId: userId,
+          };
+          profileImage = await this.fileService.uploadFile(uploadFileRequest);
+        }
         const hashedPassword = await bcrypt.hash(request.password, 12);
-        const newUser = {
-          id: uuidv4(),
+        const createdUser = {
+          id: userId,
           firstName: request.firstName,
           lastName: request.lastName,
           email: request.email,
           phoneNumber: request.phoneNumber,
           role: request.role == 'USER' ? Role.USER : Role.SPORTAREA,
           password: hashedPassword,
+          photoFileName: profileImage.filename,
         };
-        return await this.userRepo.create(newUser);
+        const user = await this.userRepo.create(createdUser);
+        return {
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email,
+          phoneNumber: user.phoneNumber,
+          imageURL: profileImage.url,
+        };
       }
     } catch (err) {
       console.log(err);

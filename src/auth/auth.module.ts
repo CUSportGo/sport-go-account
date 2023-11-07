@@ -10,23 +10,36 @@ import { BlacklistRepository } from 'src/repository/blacklist.repository';
 
 import { SportAreaListRepository } from 'src/repository/sportAreaList.repository';
 
-
 import { ClientsModule, Transport } from '@nestjs/microservices';
+import { FileModule } from '../file/file.module';
 
 @Module({
-  imports: [PrismaModule, JwtModule.register({}), ClientsModule.register([{
-    name: 'EMAIL_SERVICE',
-    transport: Transport.RMQ,
-    options: {
-      urls: ['amqp://localhost:5672'],
-      queue: 'email_queue',
-      queueOptions: {
-        durable: false
-      }
-    }
-  }])],
-  providers: [AuthService, UserRepository, AccessTokenStrategy, ConfigService, BlacklistRepository,SportAreaListRepository,],
-
+  imports: [
+    PrismaModule,
+    JwtModule.register({}),
+    ClientsModule.register([
+      {
+        name: 'EMAIL_SERVICE',
+        transport: Transport.RMQ,
+        options: {
+          urls: ['amqp://localhost:5672'],
+          queue: 'email_queue',
+          queueOptions: {
+            durable: false,
+          },
+        },
+      },
+    ]),
+    FileModule,
+  ],
+  providers: [
+    AuthService,
+    UserRepository,
+    AccessTokenStrategy,
+    ConfigService,
+    BlacklistRepository,
+    SportAreaListRepository,
+  ],
   controllers: [AuthController],
 })
 export class AuthModule {}

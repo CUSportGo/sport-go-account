@@ -5,8 +5,7 @@ describe('FileService', () => {
   let service: FileService;
 
   const mockFileClient = {
-    uploadFile: jest.fn(),
-    getSignedUrl: jest.fn(),
+    getService: jest.fn(),
   };
 
   beforeEach(async () => {

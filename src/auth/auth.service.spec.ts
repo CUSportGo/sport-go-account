@@ -5,6 +5,7 @@ import { ConfigService } from '@nestjs/config';
 import { UserRepository } from '../repository/user.repository';
 import { BlacklistRepository } from '../repository/blacklist.repository';
 import { SportAreaListRepository } from '../repository/sportAreaList.repository';
+import { FileService } from '../file/file.service';
 describe('AuthService', () => {
   let service: AuthService;
   const mockJwtService = {
@@ -28,6 +29,10 @@ describe('AuthService', () => {
 
   const mockSportAreaListRepository = {
     addSportArea: jest.fn(),
+  };
+
+  const mockFileService = {
+    uploadFile: jest.fn(),
   };
 
   const mockEmailService = {
@@ -58,6 +63,10 @@ describe('AuthService', () => {
         {
           provide: SportAreaListRepository,
           useValue: mockSportAreaListRepository,
+        },
+        {
+          provide: FileService,
+          useValue: mockFileService,
         },
         {
           provide: 'EMAIL_SERVICE',

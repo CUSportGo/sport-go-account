@@ -5,7 +5,7 @@ import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { AccessTokenStrategy } from './strategies/accessToken.strategy';
-import { ConfigService } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { BlacklistRepository } from 'src/repository/blacklist.repository';
 
 import { SportAreaListRepository } from 'src/repository/sportAreaList.repository';
@@ -17,13 +17,14 @@ import { FileModule } from '../file/file.module';
   imports: [
     PrismaModule,
     JwtModule.register({}),
+    ConfigModule.forRoot(),
     ClientsModule.register([
       {
         name: 'EMAIL_SERVICE',
         transport: Transport.RMQ,
         options: {
-          urls: ['amqp://localhost:5672'],
-          queue: 'email_queue',
+          urls: [process.env.EMAIL_SERVICE_RMQ],
+          queue: process.env.EMAIL_QUEUE,
           queueOptions: {
             durable: false,
           },

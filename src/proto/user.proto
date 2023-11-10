@@ -4,6 +4,7 @@ package user;
 
 service UserService {
   rpc GetUserSportArea(GetUserSportAreaRequest) returns (GetUserSportAreaResponse) {}
+  rpc GetUserProfile(GetUserProfileRequest) returns (GetUserProfileResponse) {}
 }
 
 message GetUserSportAreaRequest {
@@ -13,4 +14,18 @@ message GetUserSportAreaRequest {
 message GetUserSportAreaResponse {
   string userId = 1;
   string sportAreaId =2;
+}
+
+message GetUserProfileRequest {
+  string userId = 1;
+}
+
+message GetUserProfileResponse {
+  string id = 1;
+  string firstName = 2;
+  string lastName = 3;
+  string email = 4;
+  string profileUrl = 5;
+  string role = 6;
+  string sportAreaId = 7;
 }

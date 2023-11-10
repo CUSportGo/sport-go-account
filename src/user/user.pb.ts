@@ -13,21 +13,41 @@ export interface GetUserSportAreaResponse {
   sportAreaId: string;
 }
 
+export interface GetUserProfileRequest {
+  userId: string;
+}
+
+export interface GetUserProfileResponse {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  profileUrl: string;
+  role: string;
+  sportAreaId: string;
+}
+
 export const USER_PACKAGE_NAME = "user";
 
 export interface UserServiceClient {
   getUserSportArea(request: GetUserSportAreaRequest): Observable<GetUserSportAreaResponse>;
+
+  getUserProfile(request: GetUserProfileRequest): Observable<GetUserProfileResponse>;
 }
 
 export interface UserServiceController {
   getUserSportArea(
     request: GetUserSportAreaRequest,
   ): Promise<GetUserSportAreaResponse> | Observable<GetUserSportAreaResponse> | GetUserSportAreaResponse;
+
+  getUserProfile(
+    request: GetUserProfileRequest,
+  ): Promise<GetUserProfileResponse> | Observable<GetUserProfileResponse> | GetUserProfileResponse;
 }
 
 export function UserServiceControllerMethods() {
   return function (constructor: Function) {
-    const grpcMethods: string[] = ["getUserSportArea"];
+    const grpcMethods: string[] = ["getUserSportArea", "getUserProfile"];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
       GrpcMethod("UserService", method)(constructor.prototype[method], method, descriptor);

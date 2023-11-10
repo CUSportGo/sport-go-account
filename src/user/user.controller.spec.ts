@@ -8,6 +8,8 @@ describe('UserController', () => {
     findAllUsers: jest.fn(),
     banUser: jest.fn(),
     unbanUser: jest.fn(),
+    getUserProfile: jest.fn(),
+
   };
 
   beforeEach(async () => {

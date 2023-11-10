@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UserService } from './user.service';
 import { UserRepository } from '../repository/user.repository';
 import { SportAreaListRepository } from '../repository/sportAreaList.repository';
+import { FileService } from '../file/file.service';
 
 describe('UserService', () => {
   let service: UserService;
@@ -9,7 +10,11 @@ describe('UserService', () => {
     findUserById: jest.fn(),
     update: jest.fn(),
     exclude: jest.fn(),
+
   };
+  const mockFileService = {
+
+  }
 
   const mockSportAreaListRepo = {};
 
@@ -25,6 +30,11 @@ describe('UserService', () => {
           provide: SportAreaListRepository,
           useValue: mockSportAreaListRepo,
         },
+        {
+          provide: FileService,
+          useValue: mockFileService,
+
+        }
       ],
     }).compile();
 

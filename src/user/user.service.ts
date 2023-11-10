@@ -15,7 +15,7 @@ import {
 import { SportAreaListRepository } from '../repository/sportAreaList.repository';
 import { status } from '@grpc/grpc-js';
 import { RpcException } from '@nestjs/microservices';
-import { FileService } from 'src/file/file.service';
+import { FileService } from '../file/file.service';
 import { use } from 'passport';
 
 @Injectable()

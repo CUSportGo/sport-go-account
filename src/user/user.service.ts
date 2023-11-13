@@ -107,7 +107,7 @@ export class UserService implements UserServiceController {
     try {
       const userId = request.userId
       let user = await this.userRepo.findUserById(userId);
-      let userSportArea = await this.sportAreaListRepo.findSportAreaByUser(userId)
+      let userSportArea = ((user.role === 'USER') ? null : await this.sportAreaListRepo.findSportAreaByUser(userId))
       const photoURL = ((user.photoURL == null) ? (await this.fileService.getSignedUrl({ filename: user.photoFileName, userId: userId })).url : user.photoURL)
       return {
         id: user.id,

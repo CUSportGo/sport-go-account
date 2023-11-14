@@ -3,6 +3,8 @@ import { ClientGrpc } from '@nestjs/microservices';
 import { catchError, firstValueFrom } from 'rxjs';
 import {
   FileServiceClient,
+  GetSignedURLRequest,
+  GetSignedURLResponse,
   UploadFileRequest,
   UploadFileResponse,
 } from './file.pb';
@@ -19,6 +21,16 @@ export class FileService {
   async uploadFile(request: UploadFileRequest): Promise<UploadFileResponse> {
     return await firstValueFrom(
       this.fileClient.uploadFile(request).pipe(
+        catchError((error) => {
+          this.logger.error(error);
+          throw error;
+        }),
+      ),
+    );
+  }
+  async getSignedUrl(request: GetSignedURLRequest): Promise<GetSignedURLResponse> {
+    return await firstValueFrom(
+      this.fileClient.getSignedUrl(request).pipe(
         catchError((error) => {
           this.logger.error(error);
           throw error;

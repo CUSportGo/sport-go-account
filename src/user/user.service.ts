@@ -9,17 +9,22 @@ import {
   UserServiceController,
   GetUserSportAreaRequest,
   GetUserSportAreaResponse,
+  GetUserProfileRequest,
+  GetUserProfileResponse,
 } from './user.pb';
 import { SportAreaListRepository } from '../repository/sportAreaList.repository';
 import { status } from '@grpc/grpc-js';
 import { RpcException } from '@nestjs/microservices';
+import { FileService } from '../file/file.service';
+import { use } from 'passport';
 
 @Injectable()
 export class UserService implements UserServiceController {
   constructor(
     private userRepo: UserRepository,
     private sportAreaListRepo: SportAreaListRepository,
-  ) {}
+    private fileService: FileService,
+  ) { }
 
   findAllUsers() {
     try {
@@ -92,6 +97,34 @@ export class UserService implements UserServiceController {
         throw new RpcException({
           code: status.INTERNAL,
           message: 'internal server error',
+        });
+      }
+      throw err;
+    }
+  }
+
+  async getUserProfile(request: GetUserProfileRequest): Promise<GetUserProfileResponse> {
+    try {
+      const userId = request.userId
+      let user = await this.userRepo.findUserById(userId);
+      let userSportArea = ((user.role === 'USER') ? null : await this.sportAreaListRepo.findSportAreaByUser(userId))
+      const photoURL = ((user.photoURL == null) ? (await this.fileService.getSignedUrl({ filename: user.photoFileName, userId: userId })).url : user.photoURL)
+      return {
+        id: user.id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        profileUrl: photoURL,
+        role: user.role,
+        sportAreaId: ((userSportArea == null) ? null : userSportArea.SportAreaId),
+      }
+
+    } catch (err: any) {
+      console.log(err);
+      if (!(err instanceof RpcException)) {
+        throw new RpcException({
+          code: status.INTERNAL,
+          message: 'internal server error cant get user profile',
         });
       }
       throw err;

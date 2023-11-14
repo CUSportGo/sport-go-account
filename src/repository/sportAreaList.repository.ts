@@ -7,7 +7,7 @@ import { UserRepository } from './user.repository';
 
 @Injectable()
 export class SportAreaListRepository {
-  constructor(private db: PrismaService) {}
+  constructor(private db: PrismaService) { }
 
   async addSportArea(
     updateInfo: UpdateUserSportAreaRequest,
@@ -24,5 +24,13 @@ export class SportAreaListRepository {
     return await this.db.sportArea.findFirst({
       where: { SportAreaId: sportAreaId },
     });
+  }
+
+  async findSportAreaByUser(userId: string): Promise<SportArea> {
+    return await this.db.sportArea.findFirst({
+      where: {
+        userId: userId
+      }
+    })
   }
 }

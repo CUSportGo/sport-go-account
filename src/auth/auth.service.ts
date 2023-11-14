@@ -424,15 +424,20 @@ export class AuthService implements AuthServiceController {
       await this.userRepo.update(userId, {
         refreshToken: null,
       });
-    } catch (e) {
-      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+    } catch (error) {
+      console.log(error);
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
         console.log(
           'There is a unique constraint violation, a blacklist should not outdated twice!',
         );
+        throw new RpcException({
+          code: status.ALREADY_EXISTS,
+          message: 'Token is already used',
+        });
       }
       throw new RpcException({
         code: status.INTERNAL,
-        message: e.message,
+        message: 'Internal server error',
       });
     }
 

@@ -381,6 +381,12 @@ export class AuthService implements AuthServiceController {
         request.accessToken,
       ) as JwtPayload;
       const user = await this.userRepo.findUserById(credential.sub);
+      if (!user) {
+        throw new RpcException({
+          code: status.NOT_FOUND,
+          message: 'Not found user',
+        });
+      }
 
       const isPasswordMatch = await bcrypt.compare(
         request.password,
@@ -456,6 +462,13 @@ export class AuthService implements AuthServiceController {
           message: 'user not found',
         });
       }
+      if (user.facebookID || user.googleID) {
+        throw new RpcException({
+          code: status.NOT_FOUND,
+          message: 'user not found',
+        });
+      }
+
       // gen token
       const userToken = (await this.getTokens(user.id, user.role)).accessToken;
       const linkToResetPassword =

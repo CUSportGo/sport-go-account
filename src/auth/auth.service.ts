@@ -432,12 +432,12 @@ export class AuthService implements AuthServiceController {
         );
         throw new RpcException({
           code: status.ALREADY_EXISTS,
-          message: error.message,
+          message: 'Token is already used',
         });
       }
       throw new RpcException({
         code: status.INTERNAL,
-        message: error.message,
+        message: 'Internal server error',
       });
     }
 
